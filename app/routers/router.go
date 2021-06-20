@@ -13,6 +13,7 @@ func InitRouter() *gin.Engine {
 	user(r)
 	host(r)
 	task(r)
+	actionLog(r)
 	return r
 }
 
@@ -47,4 +48,12 @@ func task(r *gin.Engine) {
 		task.POST("/add_repeat_task", interceptor.NewInterceptor().ParseToken, controller.NewTask().AddRepeatTask)
 		task.GET("/get_detail", interceptor.NewInterceptor().ParseToken, controller.NewTask().GetDetail)
 	}
+}
+
+func actionLog(r *gin.Engine) {
+	log := r.Group("/log")
+	{
+		log.GET("/list", interceptor.NewInterceptor().ParseToken, controller.NewLog().List)
+	}
+
 }
