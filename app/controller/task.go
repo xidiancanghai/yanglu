@@ -28,7 +28,7 @@ func (t *Task) StartFastTask(ctx *gin.Context) {
 		return
 	}
 	uid := ctx.GetInt("uid")
-	if service.NewUserService().HasAuthority(uid, model.AuthorityCreateSecurityTask) {
+	if !service.NewUserService().HasAuthority(uid, model.AuthorityCreateSecurityTask) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限创建安全检查任务", errors.New("你没有权限创建安全检查任务"))
 		return
 	}
@@ -82,7 +82,7 @@ func (t *Task) AddTimedTask(ctx *gin.Context) {
 	}
 
 	uid := ctx.GetInt("uid")
-	if service.NewUserService().HasAuthority(uid, model.AuthorityCreateSmartTask) {
+	if !service.NewUserService().HasAuthority(uid, model.AuthorityCreateSmartTask) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限创建定期检查任务", errors.New("你没有权限创建定期检查任务"))
 		return
 	}
@@ -112,7 +112,7 @@ func (t *Task) AddRepeatTask(ctx *gin.Context) {
 	}
 
 	uid := ctx.GetInt("uid")
-	if service.NewUserService().HasAuthority(uid, model.AuthorityCreateSmartTask) {
+	if !service.NewUserService().HasAuthority(uid, model.AuthorityCreateSmartTask) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限创建定期检查任务", errors.New("你没有权限创建定期检查任务"))
 		return
 	}

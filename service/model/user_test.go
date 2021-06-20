@@ -17,14 +17,17 @@ func TestUser(t *testing.T) {
 	// init db
 	data.InitMysql()
 
-	user := User{
-		Name:       "xionger",
-		Passwd:     "1234567",
-		Authority:  []int{1},
-		Department: "安全",
-	}
+	// user := &User{
+	// 	Name:       "xionger",
+	// 	Passwd:     "1234567",
+	// 	Authority:  []int{1},
+	// 	Department: "安全",
+	// }
+	user := new(User)
+	user.Name = "xionger"
+	user.Passwd = "1234567"
 	err := user.Create()
-	fmt.Println("err = ", err)
+	fmt.Println("err = ", err, " uid = ", user.Uid)
 }
 
 func TestSelect(t *testing.T) {

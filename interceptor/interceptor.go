@@ -24,7 +24,7 @@ func (ic *Interceptor) ParseToken(ctx *gin.Context) {
 		secret = def.ApiJwtSecret
 	}
 	token := ctx.GetHeader("token")
-	if config.IsLocal() {
+	if config.IsLocal() && token == "" {
 		ctx.Set("uid", 1)
 		return
 	}

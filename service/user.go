@@ -54,6 +54,7 @@ func (us *UserService) Login(name string, passwd string) (*model.User, error) {
 			if err != nil {
 				return nil, err
 			}
+			u, _ = model.NewUser().GetUserByNamePassWd(u.Name, u.Passwd)
 			return u, nil
 		}
 	}
@@ -83,6 +84,9 @@ func (us *UserService) SetAuthority(name string, authority int) error {
 	user, err := model.NewUser().GetUserByName(name)
 	if err != nil {
 		return err
+	}
+	if user.Uid == 0 {
+		return errors.New("该用户不存在")
 	}
 	user.Authority = append(user.Authority, authority)
 	err = user.Updates(map[string]interface{}{

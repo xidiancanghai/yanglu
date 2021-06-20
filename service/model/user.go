@@ -34,14 +34,14 @@ func (c *Ints) Scan(input interface{}) error {
 }
 
 type User struct {
-	Uid        int    `db:"uid" json:"-"`
-	Name       string `db:"name' json:"name"`
-	Passwd     string `db:"passwd' json:"-"`
-	Authority  Ints   `db:"authority" json:"authority"`
-	Department string `db:"department" json:"department"`
-	IsDelete   int    `db:"is_delete" json:"-"`
-	UpdateTime int64  `db:"update_time" json:"-"`
-	CreateTime int64  `db:"create_time" json:"-"`
+	Uid        int    `gorm:"uid" json:"uid"`
+	Name       string `gorm:"name" json:"name"`
+	Passwd     string `gorm:"passwd" json:"-"`
+	Authority  Ints   `gorm:"authority" json:"authority"`
+	Department string `gorm:"department" json:"department"`
+	IsDelete   int    `gorm:"is_delete" json:"-"`
+	UpdateTime int64  `gorm:"update_time" json:"-"`
+	CreateTime int64  `gorm:"create_time" json:"-"`
 }
 
 func NewUser() *User {
@@ -56,14 +56,11 @@ func (u *User) Create() error {
 	if u.Name == "" || u.Passwd == "" {
 		return errors.New("参数错误")
 	}
-	if u.CreateTime == 0 {
-		u.CreateTime = time.Now().Unix()
-		u.UpdateTime = u.CreateTime
-	}
-	db := data.GetDB()
-	tx := db.Create(u)
+	u.CreateTime = time.Now().Unix()
+	u.UpdateTime = u.CreateTime
+	tx := data.GetDB().Create(u)
 	if tx.Error != nil {
-		logrus.Error("insert error", tx)
+		logrus.Error("Create err ", tx)
 	}
 	return tx.Error
 }

@@ -38,8 +38,8 @@ func (u *User) AddUser(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	if us.HasAuthorityByUser(user, model.AuthoritySuperAdmin) {
-		helper.ErrRsp(ctx, def.CodeErr, "你没有权限设置他人权限", errors.New("你没有权限设置他人权限"))
+	if !us.HasAuthorityByUser(user, model.AuthoritySuperAdmin) {
+		helper.ErrRsp(ctx, def.CodeErr, "你没有权限添加用户", errors.New("你没有权限添加用户"))
 		return
 	}
 
@@ -48,16 +48,8 @@ func (u *User) AddUser(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	token, err := service.NewTokenService(usr.Uid).BuildToken()
-	if err != nil {
-		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
-		return
-	}
 	service.NewActionLogService(uid).AddUser(usr)
-	res := gin.H{
-		"token": token,
-	}
-	helper.OKRsp(ctx, res)
+	helper.OKRsp(ctx, gin.H{})
 }
 
 func (u *User) Login(ctx *gin.Context) {
@@ -120,7 +112,7 @@ func (u *User) SetAuthority(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	if us.HasAuthorityByUser(user, model.AuthoritySuperAdmin) {
+	if !us.HasAuthorityByUser(user, model.AuthoritySuperAdmin) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限设置他人权限", errors.New("你没有权限设置他人权限"))
 		return
 	}
@@ -150,7 +142,7 @@ func (u *User) DeleteUser(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	if us.HasAuthorityByUser(user, model.AuthoritySuperAdmin) {
+	if !us.HasAuthorityByUser(user, model.AuthoritySuperAdmin) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限设置他人权限", errors.New("你没有权限设置他人权限"))
 		return
 	}
