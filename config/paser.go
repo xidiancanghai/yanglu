@@ -45,6 +45,14 @@ type Config struct {
 			Dsn string `toml:"dsn"`
 		} `toml:"cron"`
 	} `toml:"mysql"`
+	Http struct {
+		Port int `toml:"port"`
+	} `toml:"http"`
+
+	Admin struct {
+		User   string `toml:"user"`
+		PassWd string `toml:"pass_wd"`
+	} `toml:amdin_user`
 
 	//Alert struct {
 	//	Open bool     `toml:"open"`
@@ -120,4 +128,12 @@ func GetMysqlApi() string {
 
 func GetMysqlCron() string {
 	return conf.Mysql.Cron.Dsn
+}
+
+func GetHttpPort() int {
+	return conf.Http.Port
+}
+
+func GetAdminInfo() (string, string) {
+	return conf.Admin.User, conf.Admin.PassWd
 }

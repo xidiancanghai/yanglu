@@ -8,9 +8,10 @@ import (
 
 func TestInitEnvConf(t *testing.T) {
 	//InitEnvConf("./env.toml")
-	InitEnvConf(GetEnvPath() + "/env.toml")
+	InitEnvConf(GetEnvPath() + "/env.json")
 
 	res := GetEnv()
 	assert.Equal(t, res, EnvLocal)
 	assert.Equal(t, GetLogPath(), "./logs")
+
 }

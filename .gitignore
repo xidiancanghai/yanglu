@@ -1,0 +1,13 @@
+
+*.idea
+*.vscode
+nohup.*
+nohup_*
+config/env.toml
+logs
+log
+app/logsapi
+*/logs
+*_server_*
+api_server
+tags

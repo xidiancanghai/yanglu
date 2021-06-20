@@ -20,7 +20,7 @@ func TestUser(t *testing.T) {
 	user := User{
 		Name:       "xionger",
 		Passwd:     "1234567",
-		Authority:  0,
+		Authority:  []int{1},
 		Department: "安全",
 	}
 	err := user.Create()

@@ -1,0 +1,15 @@
+2021/06/05 07:41:41 succeed to parse env config: {Environment:{Env:1 LogDir:./logs} Mysql:{Api:{Dsn:yanglu:yanglu_2021@tcp(127.0.0.1:3306)/yanglu?charset=utf8mb4} Cron:{Dsn:yanglu:yanglu_2021@tcp(127.0.0.1:3306)/yanglu?charset=utf8mb4}} Http:{Port:8090}}
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /user/add_user            --> yanglu/app/controller.(*User).AddUser-fm (3 handlers)
+[GIN-debug] POST   /user/login               --> yanglu/app/controller.(*User).Login-fm (2 handlers)
+[GIN-debug] GET    /user/get_user_info       --> yanglu/app/controller.(*User).GetUserInfo-fm (3 handlers)
+[GIN-debug] POST   /user/set_authority       --> yanglu/app/controller.(*User).SetAuthority-fm (3 handlers)
+[GIN-debug] POST   /user/delete_user         --> yanglu/app/controller.(*User).DeleteUser-fm (3 handlers)
+[GIN-debug] POST   /host/add                 --> yanglu/app/controller.(*Host).Add-fm (3 handlers)
+[GIN-debug] POST   /host/batch_add           --> yanglu/app/controller.(*Host).BatchAdd-fm (3 handlers)
+[GIN-debug] POST   /host/update_department   --> yanglu/app/controller.(*Host).UpdateDepartment-fm (3 handlers)
+[GIN-debug] POST   /host/search_host         --> yanglu/app/controller.(*Host).SearchHost-fm (3 handlers)
+2021/06/05 07:41:41 服务正在启动，监听端口: 8090 ,PID: 80378 v1.6.3 version: temp
