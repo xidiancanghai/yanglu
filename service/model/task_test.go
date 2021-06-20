@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"testing"
+	"time"
 	"yanglu/config"
 	"yanglu/service/data"
 	"yanglu/service/logger"
@@ -17,17 +18,18 @@ func TestTask(t *testing.T) {
 	// init db
 	data.InitMysql()
 
-	// task := &Task{
-	// 	Ip:        "112.125.25.235",
-	// 	IsRepeate: 1,
-	// 	ExecuTime: "9h30min",
-	// }
-	// task.Create()
-	rt, _ := NewTask().GetTask(1)
-	fmt.Println("task = ", *rt)
-	rt.Updates(map[string]interface{}{
-		"status": 1,
-	})
+	task := &Task{
+		Ip:        "112.125.25.235",
+		Type:      0,
+		ExecuTime: time.Now().Unix(),
+	}
+	task.Create()
+	fmt.Println(" id = ", task.Id)
+	// rt, _ := NewTask().GetTask(1)
+	// fmt.Println("task = ", *rt)
+	// rt.Updates(map[string]interface{}{
+	// 	"status": 1,
+	// })
 }
 
 func TestGetMaxBatchId(t *testing.T) {

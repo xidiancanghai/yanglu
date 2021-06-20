@@ -49,10 +49,10 @@ type Config struct {
 		Port int `toml:"port"`
 	} `toml:"http"`
 
-	Admin struct {
+	AdminUser struct {
 		User   string `toml:"user"`
 		PassWd string `toml:"pass_wd"`
-	} `toml:amdin_user`
+	} `toml:"amdin_user"`
 
 	//Alert struct {
 	//	Open bool     `toml:"open"`
@@ -135,5 +135,5 @@ func GetHttpPort() int {
 }
 
 func GetAdminInfo() (string, string) {
-	return conf.Admin.User, conf.Admin.PassWd
+	return conf.AdminUser.User, conf.AdminUser.PassWd
 }

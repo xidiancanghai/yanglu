@@ -40,7 +40,7 @@ func (es *ExcelService) GetHostInfos() ([]*model.HostInfo, error) {
 
 		for i, cell := range row {
 			cell = strings.TrimSpace(cell)
-			if cell == "" {
+			if cell == "" && headers[i] != "department" {
 				return nil, errors.New("输入的值为空")
 			}
 			if index == 0 {
@@ -62,7 +62,7 @@ func (es *ExcelService) GetHostInfos() ([]*model.HostInfo, error) {
 		}
 		if index == 0 {
 			if !es.checkHeaders(headers) {
-				return nil, errors.New("表头错误，格式 ip, port, name, passwd")
+				return nil, errors.New("表头错误，格式 ip, port, name, passwd, department")
 			}
 			index++
 		} else {
