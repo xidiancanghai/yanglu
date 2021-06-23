@@ -156,3 +156,36 @@ func (hc *Host) GetVulnerabilityInfo(ctx *gin.Context) {
 		"list": list,
 	})
 }
+
+func (hc *Host) ListAll(ctx *gin.Context) {
+	list, err := service.NewHostInfoService().ListAll()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{
+		"list": list,
+	})
+}
+
+func (hc *Host) VulnerabilityDistribute(ctx *gin.Context) {
+	list, err := service.NewEmptyVulnerabilityService().VulnerabilityDistribute()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{
+		"list": list,
+	})
+}
+
+func (hc *Host) SystemOsDistribute(ctx *gin.Context) {
+	list, err := service.NewHostInfoService().SystemOsDistribute()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{
+		"list": list,
+	})
+}

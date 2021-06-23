@@ -14,6 +14,7 @@ func InitRouter() *gin.Engine {
 	host(r)
 	task(r)
 	actionLog(r)
+	config(r)
 	return r
 }
 
@@ -28,6 +29,13 @@ func user(r *gin.Engine) {
 	}
 }
 
+func config(r *gin.Engine) {
+	conf := r.Group("/config")
+	{
+		conf.GET("/get_const_config", controller.NewConfController().GetConf)
+	}
+}
+
 func host(r *gin.Engine) {
 	host := r.Group("host")
 	{
@@ -36,6 +44,9 @@ func host(r *gin.Engine) {
 		host.POST("/update_department", interceptor.NewInterceptor().ParseToken, controller.NewHost().UpdateDepartment)
 		host.POST("/search_host", interceptor.NewInterceptor().ParseToken, controller.NewHost().SearchHost)
 		host.GET("/get_vulnerability_info", interceptor.NewInterceptor().ParseToken, controller.NewHost().GetVulnerabilityInfo)
+		host.GET("/list_all", interceptor.NewInterceptor().ParseToken, controller.NewHost().ListAll)
+		host.GET("/vulnerability_distribute", interceptor.NewInterceptor().ParseToken, controller.NewHost().VulnerabilityDistribute)
+		host.GET("/system_os_distribute", interceptor.NewInterceptor().ParseToken, controller.NewHost().SystemOsDistribute)
 	}
 }
 
@@ -46,7 +57,8 @@ func task(r *gin.Engine) {
 		task.GET("/get_progress", interceptor.NewInterceptor().ParseToken, controller.NewTask().GetProgress)
 		task.POST("/add_timed_task", interceptor.NewInterceptor().ParseToken, controller.NewTask().AddTimedTask)
 		task.POST("/add_repeat_task", interceptor.NewInterceptor().ParseToken, controller.NewTask().AddRepeatTask)
-		task.GET("/get_detail", interceptor.NewInterceptor().ParseToken, controller.NewTask().GetDetail)
+		task.GET("/curl_task_info", interceptor.NewInterceptor().ParseToken, controller.NewTask().GetDetail)
+		task.GET("/check_info", interceptor.NewInterceptor().ParseToken, controller.NewTask().CheckInfo)
 	}
 }
 
