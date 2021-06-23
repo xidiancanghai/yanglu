@@ -333,3 +333,27 @@ func (ts *TaskService) GetDetail() (interface{}, error) {
 	}
 	return res, nil
 }
+
+func (ts *TaskService) GetHostCheckStatus() (interface{}, error) {
+	hosts, err := model.NewHostInfo().ListAll()
+	if err != nil {
+		logrus.Error("ListAll err ", err)
+		return nil, err
+	}
+	if len(hosts) == 0 {
+		return nil, errors.New("暂未有任何机器")
+	}
+	ips := make([]string, len(hosts))
+	for k, v := range hosts {
+		ips[k] = v.Ip
+	}
+	checkStatus, err := model.NewVulnerabilityLog().HostCheckStatus(ips)
+	if err != nil {
+		logrus.Error("ListAll err ", err)
+		return nil, err
+	}
+	res := map[string]int{}
+	res["has_checked"] = len(checkStatus)
+	res["wait_check"] = len(hosts) - len(checkStatus)
+	return res, nil
+}
