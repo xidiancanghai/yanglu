@@ -384,3 +384,38 @@ func (h *HostInfoService) CpFileBySftp(host *model.HostInfo, sourceFile string, 
 
 	return nil
 }
+
+func (hc *HostInfoService) ListAll() (interface{}, error) {
+	hosts, err := model.NewHostInfo().ListAll()
+	if err != nil {
+		logrus.Error("ListAll err ", err)
+		return nil, err
+	}
+	if len(hosts) == 0 {
+		return nil, errors.New("暂未有任何机器")
+	}
+	list := make([]struct {
+		*model.HostInfo
+		CheckStatus int `json:"check_status"`
+	}, len(hosts))
+	ips := make([]string, len(hosts))
+	for k, v := range hosts {
+		ips[k] = v.Ip
+	}
+	checkStatus, err := model.NewVulnerabilityLog().HostCheckStatus(ips)
+	if err != nil {
+		logrus.Error("ListAll err ", err)
+		return nil, err
+	}
+	for k, v := range hosts {
+		list[k].HostInfo = hosts[k]
+		if t, ok := checkStatus[v.Ip]; ok {
+			list[k].CheckStatus = t
+		}
+	}
+	return list, nil
+}
+
+func (hs *HostInfoService) SystemOsDistribute() (interface{}, error) {
+	return model.NewHostInfo().SystemOsDistribute()
+}

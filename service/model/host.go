@@ -14,7 +14,7 @@ type HostInfo struct {
 	Ip         string `json:"ip"`
 	Port       int    `json:"port"`
 	SshUser    string `json:"ssh_user"`
-	SshPasswd  string `json:"ssh_passwd"`
+	SshPasswd  string `json:"-"`
 	Department string `json:"department"`
 	SystemOs   string `json:"system_os"`
 	UpdateTime int64  `json:"-"`
@@ -118,6 +118,40 @@ func (h *HostInfo) GetHostInfoByDepartment(department string) ([]*HostInfo, erro
 	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
 		logrus.Error("GetHostInfoById err", tx)
 		return nil, tx.Error
+	}
+	return list, nil
+}
+
+func (h *HostInfo) ListAll() ([]*HostInfo, error) {
+	list := []*HostInfo{}
+	tx := data.GetDB().Model(h).Find(&list)
+	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
+		logrus.Error("GetHostInfoById err", tx)
+		return nil, tx.Error
+	}
+	return list, nil
+}
+
+func (h *HostInfo) SystemOsDistribute() ([]map[string]interface{}, error) {
+	list := []map[string]interface{}{}
+	sqll := "select system_os, count(*) as num from host_info group by system_os order by num desc"
+	rows, err := data.GetDB().Raw(sqll).Rows()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		logrus.Error("SystemOsDistribute err ", err)
+		return list, err
+	}
+	if err != nil {
+		return list, nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var systemOs string
+		var num int
+		rows.Scan(&systemOs, &num)
+		list = append(list, map[string]interface{}{
+			"system_os": systemOs,
+			"num":       num,
+		})
 	}
 	return list, nil
 }

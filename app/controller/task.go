@@ -137,3 +137,12 @@ func (t *Task) GetDetail(ctx *gin.Context) {
 	}
 	helper.OKRsp(ctx, list)
 }
+
+func (t *Task) CheckInfo(ctx *gin.Context) {
+	res, err := service.NewTaskService().GetHostCheckStatus()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, res)
+}

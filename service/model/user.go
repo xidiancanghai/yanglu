@@ -20,6 +20,9 @@ const (
 	AuthorityCheckLog           = 6
 	AuthorityDeleteUser         = 7
 	AuthorityCreateSmartTask    = 8
+	AuthorityUpdateSoft         = 9
+	AuthorityCreateUserGroup    = 10
+	AuthorityCheckDocker        = 11
 )
 
 type Ints []int
