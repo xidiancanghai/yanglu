@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
 	"yanglu/service"
@@ -21,8 +22,8 @@ func (u *User) Register(ctx *gin.Context) {
 	params := &struct {
 		Company      string `form:"company" binding:"required"`
 		Phone        string `form:"phone" binding:"required"`
-		email        string `form:"email" binding:"required"`
-		passwd       string `form:"passwd" binding:"required"`
+		Email        string `form:"email" binding:"required"`
+		Passwd       string `form:"passwd" binding:"required"`
 		CaptchaId    string `form:"captcha_id" binding:"required"`
 		CaptchaValue string `form:"captcha_value" binding:"required"`
 	}{}
@@ -37,6 +38,21 @@ func (u *User) Register(ctx *gin.Context) {
 		return
 	}
 
+	cs := service.NewEmptyCloudUserService()
+	cloudUser, err := cs.Register(params.Company, params.Phone, params.Email, params.Passwd)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	token, err := service.NewTokenService(cloudUser.Uid).BuildToken()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	res := gin.H{
+		"token": token,
+	}
+	helper.OKRsp(ctx, res)
 }
 
 func (u *User) AddUser(ctx *gin.Context) {
@@ -92,17 +108,29 @@ func (u *User) Login(ctx *gin.Context) {
 		return
 	}
 
-	usr, err := service.NewUserService().Login(params.Name, params.Passwd)
+	uid := 0
+	if config.IsCloud() {
+		cs := service.NewEmptyCloudUserService()
+		user, err := cs.Login(params.Name, params.Passwd)
+		if err != nil {
+			helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+			return
+		}
+		uid = user.Uid
+	} else {
+		usr, err := service.NewUserService().Login(params.Name, params.Passwd)
+		if err != nil {
+			helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+			return
+		}
+		uid = usr.Uid
+	}
+	token, err := service.NewTokenService(uid).BuildToken()
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	token, err := service.NewTokenService(usr.Uid).BuildToken()
-	if err != nil {
-		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
-		return
-	}
-	service.NewActionLogService(usr.Uid).Login()
+	service.NewActionLogService(uid).Login()
 	res := gin.H{
 		"token": token,
 	}

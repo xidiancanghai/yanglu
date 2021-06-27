@@ -22,6 +22,7 @@ type LicenseInfo struct {
 	UpdateSoft    int    `json:"update_soft"`
 	ExpireTimeStr string `json:"expire_time"`
 	Code          string `json:"code"`
+	IsCloud       int    `json:"is_cloud"`
 	ExpireTime    int64
 }
 
@@ -117,4 +118,11 @@ func InitLicenseConfig() error {
 	LicenseInfoConf.ExpireTime = theTime.Unix()
 
 	return nil
+}
+
+func IsCloud() bool {
+	if LicenseInfoConf == nil {
+		return false
+	}
+	return LicenseInfoConf.IsCloud == 1
 }

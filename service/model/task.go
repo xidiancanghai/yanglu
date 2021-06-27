@@ -16,7 +16,7 @@ const (
 )
 
 type Task struct {
-	Id          int
+	Id          int `gorm:"primaryKey"`
 	Name        string
 	Ip          string
 	Type        int

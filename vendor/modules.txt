@@ -63,6 +63,9 @@ github.com/jinzhu/inflection
 github.com/jinzhu/now
 # github.com/jonboulle/clockwork v0.2.2
 ## explicit
+# github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
+## explicit
+github.com/jordan-wright/email
 # github.com/json-iterator/go v1.1.9
 github.com/json-iterator/go
 # github.com/kr/fs v0.1.0
@@ -94,6 +97,9 @@ github.com/modern-go/reflect2
 github.com/mohae/deepcopy
 # github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e
 ## explicit
+# github.com/patrickmn/go-cache v2.1.0+incompatible
+## explicit
+github.com/patrickmn/go-cache
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/pkg/sftp v1.13.1

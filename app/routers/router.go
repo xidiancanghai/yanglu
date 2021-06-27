@@ -10,6 +10,7 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
+	r.Use(interceptor.NewInterceptor().LicenseExpired)
 	r.Use()
 	user(r)
 	host(r)
@@ -23,7 +24,7 @@ func InitRouter() *gin.Engine {
 func user(r *gin.Engine) {
 	user := r.Group("/user")
 	{
-		user.POST("/user/register", controller.NewUser().Register)
+		user.POST("/user/register", interceptor.NewInterceptor().Cloud, controller.NewUser().Register)
 		user.POST("/add_user", interceptor.NewInterceptor().ParseToken, controller.NewUser().AddUser)
 		user.POST("/login", controller.NewUser().Login)
 		user.GET("/get_user_info", interceptor.NewInterceptor().ParseToken, controller.NewUser().GetUserInfo)

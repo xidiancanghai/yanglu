@@ -12,22 +12,24 @@ CREATE TABLE `user_info` (
   KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4
 
-
  CREATE TABLE `host_info` (
   `id` int NOT NULL AUTO_INCREMENT,
   `ip` varchar(32) NOT NULL DEFAULT '',
   `port` int NOT NULL DEFAULT '22',
   `ssh_user` varchar(32) NOT NULL DEFAULT '',
   `ssh_passwd` varchar(32) NOT NULL DEFAULT '',
+  `department` varchar(32) NOT NULL DEFAULT '',
+  `business_name` varchar(32) NOT NULL DEFAULT '',
+  `system_os` varchar(32) NOT NULL DEFAULT '',
   `update_time` int NOT NULL DEFAULT '0',
   `create_time` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ip` (`ip`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4
 
 alter table host_info add department varchar(32) not null default '' after ssh_passwd;
 alter table host_info add system_os varchar(32) not null default '' after department;
-alter table host_info add business varchar(32) not null DEFAULT '' after system_os;
+alter table host_info add business_name varchar(32) not null DEFAULT '' after system_os;
 
 
 
@@ -110,3 +112,12 @@ select id, ip, task_id, batch_id, vulnerability_id, pkg_name, installed_version,
     `create_time` int NOT NULL DEFAULT '0',
     PRIMARY KEY(`uid`)
  ) ENGINE=InnoDB AUTO_INCREMENT=1000001 DEFAULT CHARSET=utf8mb4
+
+create table user_tmp_passwd (
+    `uid` int not null AUTO_INCREMENT,
+    `pass_wd` varchar(16) not null DEFAULT '',
+    `is_delete` tinyint (1) not null DEFAULT 0,
+    `update_time` int NOT NULL DEFAULT '0',
+    `create_time` int NOT NULL DEFAULT '0',
+    PRIMARY KEY(`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4

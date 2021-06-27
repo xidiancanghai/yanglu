@@ -26,6 +26,13 @@ func (ic *Interceptor) LicenseExpired(ctx *gin.Context) {
 	}
 }
 
+func (ic *Interceptor) Cloud(ctx *gin.Context) {
+	if !config.IsCloud() {
+		ctx.AbortWithStatusJSON(http.StatusOK, helper.Rsp(def.CodeErr, "当前非云端版本", nil))
+		return
+	}
+}
+
 func (ic *Interceptor) ParseToken(ctx *gin.Context) {
 	secret := def.ApiJwtSecretDev
 	if config.IsOnline() {

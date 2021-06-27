@@ -37,7 +37,7 @@ func (c *Ints) Scan(input interface{}) error {
 }
 
 type User struct {
-	Uid        int    `gorm:"uid" json:"uid"`
+	Uid        int    `gorm:"primaryKey" json:"uid"`
 	Name       string `gorm:"name" json:"name"`
 	Passwd     string `gorm:"passwd" json:"-"`
 	Authority  Ints   `gorm:"authority" json:"authority"`

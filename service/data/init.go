@@ -1,10 +1,13 @@
 package data
 
 import (
+	"log"
+	"time"
+	"yanglu/config"
+
+	"github.com/patrickmn/go-cache"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"yanglu/config"
 )
 
 var mainDb *gorm.DB
@@ -31,4 +34,11 @@ func InitMysql() {
 
 func GetDB() *gorm.DB {
 	return mainDb
+}
+
+//内存缓存
+var C *cache.Cache
+
+func InitMemoryCache() {
+	C = cache.New(time.Second, time.Minute)
 }

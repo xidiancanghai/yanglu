@@ -10,7 +10,7 @@ import (
 )
 
 type HostInfo struct {
-	Id           int    `json:"-"`
+	Id           int    `json:"-" gorm:"primaryKey"`
 	Ip           string `json:"ip"`
 	Port         int    `json:"port"`
 	SshUser      string `json:"ssh_user"`
