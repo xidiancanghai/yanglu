@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"yanglu/config"
 	"yanglu/service/data"
 
 	"github.com/sirupsen/logrus"
@@ -28,6 +29,9 @@ func (al *ActionLog) TableName() string {
 func (a *ActionLog) Create() error {
 	if a.Uid == 0 {
 		return errors.New("参数错误")
+	}
+	if config.LicenseInfoConf.LogManage == 0 {
+		return errors.New("当前系统无日志管理权限")
 	}
 	a.CreateTime = time.Now().Unix()
 	db := data.GetDB()

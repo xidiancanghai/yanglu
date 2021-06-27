@@ -10,15 +10,16 @@ import (
 )
 
 type HostInfo struct {
-	Id         int    `json:"-"`
-	Ip         string `json:"ip"`
-	Port       int    `json:"port"`
-	SshUser    string `json:"ssh_user"`
-	SshPasswd  string `json:"-"`
-	Department string `json:"department"`
-	SystemOs   string `json:"system_os"`
-	UpdateTime int64  `json:"-"`
-	CreateTime int64  `json:"-"`
+	Id           int    `json:"-"`
+	Ip           string `json:"ip"`
+	Port         int    `json:"port"`
+	SshUser      string `json:"ssh_user"`
+	SshPasswd    string `json:"-"`
+	Department   string `json:"department"`
+	BusinessName string `json:"business_name"`
+	SystemOs     string `json:"system_os"`
+	UpdateTime   int64  `json:"-"`
+	CreateTime   int64  `json:"-"`
 }
 
 func NewHostInfo() *HostInfo {

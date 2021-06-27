@@ -57,12 +57,14 @@ func (es *ExcelService) GetHostInfos() ([]*model.HostInfo, error) {
 					hostInfo.SshPasswd = cell
 				case 4:
 					hostInfo.Department = cell
+				case 5:
+					hostInfo.BusinessName = cell
 				}
 			}
 		}
 		if index == 0 {
 			if !es.checkHeaders(headers) {
-				return nil, errors.New("表头错误，格式 ip, port, name, passwd, department")
+				return nil, errors.New("表头错误，格式 ip, port, name, passwd, department, business_name")
 			}
 			index++
 		} else {

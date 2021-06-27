@@ -10,22 +10,26 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
+	r.Use()
 	user(r)
 	host(r)
 	task(r)
 	actionLog(r)
 	config(r)
+	util(r)
 	return r
 }
 
 func user(r *gin.Engine) {
 	user := r.Group("/user")
 	{
+		user.POST("/user/register", controller.NewUser().Register)
 		user.POST("/add_user", interceptor.NewInterceptor().ParseToken, controller.NewUser().AddUser)
 		user.POST("/login", controller.NewUser().Login)
 		user.GET("/get_user_info", interceptor.NewInterceptor().ParseToken, controller.NewUser().GetUserInfo)
 		user.POST("/set_authority", interceptor.NewInterceptor().ParseToken, controller.NewUser().SetAuthority)
 		user.POST("/delete_user", interceptor.NewInterceptor().ParseToken, controller.NewUser().DeleteUser)
+		user.GET("/list_users", interceptor.NewInterceptor().ParseToken, controller.NewUser().ListUsers)
 	}
 }
 
@@ -68,4 +72,12 @@ func actionLog(r *gin.Engine) {
 		log.GET("/list", interceptor.NewInterceptor().ParseToken, controller.NewLog().List)
 	}
 
+}
+
+func util(r *gin.Engine) {
+	util := r.Group("/util")
+	{
+		util.GET("/get_captcha", controller.NewUtilController().GetCaptcha)
+		util.GET("/get_captcha_id", controller.NewUtilController().GetCaptchaId)
+	}
 }

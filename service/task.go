@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"yanglu/config"
 	"yanglu/service/model"
 
 	"github.com/sirupsen/logrus"
@@ -58,6 +59,9 @@ func (ts *TaskService) AddFastTask(ip string) (*model.Task, error) {
 }
 
 func (ts *TaskService) AddTimedTask(ip string, execuTime int64) (*model.Task, error) {
+	if config.LicenseInfoConf.SmartTask == 0 {
+		return nil, errors.New("当前系统没有添加智能任务权限")
+	}
 	task := model.Task{
 		Ip:        ip,
 		Type:      model.TaskTypeTimedTask,
@@ -73,7 +77,9 @@ func (ts *TaskService) AddTimedTask(ip string, execuTime int64) (*model.Task, er
 }
 
 func (ts *TaskService) AddRepeatTask(ip string, execuTime int64, interval int) (*model.Task, error) {
-
+	if config.LicenseInfoConf.SmartTask == 0 {
+		return nil, errors.New("当前系统没有添加智能任务权限")
+	}
 	task := model.Task{
 		Ip:          ip,
 		Type:        model.TaskTypeRepeatedTask,
@@ -90,6 +96,14 @@ func (ts *TaskService) AddRepeatTask(ip string, execuTime int64, interval int) (
 }
 
 func (ts *TaskService) ExecuteTask(task *model.Task) error {
+
+	if config.LicenseInfoConf.SmartTask == 0 {
+		return errors.New("当前系统没有添加智能任务权限")
+	}
+
+	if config.LicenseInfoConf.NodeMax < NewHostInfoService().GetHostNum() {
+		return errors.New("当前系统机器数量超过了最大限制")
+	}
 
 	// 首先找出所有的ip
 	if task.Ip == "" {
