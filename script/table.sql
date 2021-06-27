@@ -1,14 +1,16 @@
 
-
-create table user_info (
-    uid int not null AUTO_INCREMENT,
-    passwd varchar(16) not null DEFAULT '',
-    authority TINYINT not NULL DEFAULT 0,
-    department varchar(16) not NULL DEFAULT '',
-    update_time int NOT NULL DEFAULT 0,
-    create_time int not NULL DEFAULT 0,
-    PRIMARY KEY(`uid`)
-)  ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
+CREATE TABLE `user_info` (
+  `uid` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(16) NOT NULL DEFAULT '',
+  `passwd` varchar(16) NOT NULL DEFAULT '',
+  `authority` varchar(32) NOT NULL DEFAULT '[]',
+  `department` varchar(16) NOT NULL DEFAULT '',
+  `is_delete` tinyint NOT NULL DEFAULT '0',
+  `update_time` int NOT NULL DEFAULT '0',
+  `create_time` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`uid`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4
 
 
  CREATE TABLE `host_info` (
@@ -96,3 +98,15 @@ select id, ip, task_id, batch_id, vulnerability_id, pkg_name, installed_version,
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
  alter table vulnerability_log change batch_id task_item_id int not null default 0;
+
+
+ create table cloud_user_info (
+    `uid` int not null AUTO_INCREMENT,
+    `company` varchar(32) not null DEFAULT '',
+    `phone` varchar(16) not null DEFAULT '',
+    `email` varchar(32) not null DEFAULT '',
+    `passwd` varchar(16) not null DEFAULT '',
+    `authority` varchar(32) NOT NULL DEFAULT '[]',
+    `create_time` int NOT NULL DEFAULT '0',
+    PRIMARY KEY(`uid`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=1000001 DEFAULT CHARSET=utf8mb4

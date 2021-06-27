@@ -17,6 +17,28 @@ func NewUser() *User {
 	return &User{}
 }
 
+func (u *User) Register(ctx *gin.Context) {
+	params := &struct {
+		Company      string `form:"company" binding:"required"`
+		Phone        string `form:"phone" binding:"required"`
+		email        string `form:"email" binding:"required"`
+		passwd       string `form:"passwd" binding:"required"`
+		CaptchaId    string `form:"captcha_id" binding:"required"`
+		CaptchaValue string `form:"captcha_value" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+
+	if err := service.NewUtilService().ValidateCaptcha(params.CaptchaId, params.CaptchaValue); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+
+}
+
 func (u *User) AddUser(ctx *gin.Context) {
 
 	params := &struct {
@@ -54,14 +76,22 @@ func (u *User) AddUser(ctx *gin.Context) {
 
 func (u *User) Login(ctx *gin.Context) {
 	params := &struct {
-		Name   string `form:"name" binding:"required"`
-		Passwd string `form:"passwd" binding:"required"`
+		Name         string `form:"name" binding:"required"`
+		Passwd       string `form:"passwd" binding:"required"`
+		CaptchaId    string `form:"captcha_id"`
+		CaptchaValue string `form:"captcha_value"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
+
+	if err := service.NewUtilService().ValidateCaptcha(params.CaptchaId, params.CaptchaValue); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+
 	usr, err := service.NewUserService().Login(params.Name, params.Passwd)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
@@ -153,4 +183,14 @@ func (u *User) DeleteUser(ctx *gin.Context) {
 		return
 	}
 	helper.OKRsp(ctx, gin.H{})
+}
+
+func (u *User) ListUsers(ctx *gin.Context) {
+	us := service.NewUserService()
+	list, err := us.ListUsers()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{"list": list})
 }

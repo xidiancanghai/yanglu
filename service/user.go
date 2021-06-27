@@ -16,6 +16,11 @@ func NewUserService() *UserService {
 }
 
 func (us *UserService) AddUser(name string, passwd string, authority int, department string) (*model.User, error) {
+
+	if config.LicenseInfoConf.UserManage == 0 {
+		return nil, errors.New("当前系统没有添加用户权限")
+	}
+
 	u := model.NewUser()
 	u, err := u.GetUserByName(name)
 	if err != nil {
@@ -140,4 +145,8 @@ func (us *UserService) DeleteUser(name string) error {
 		return err
 	}
 	return nil
+}
+
+func (us *UserService) ListUsers() ([]*model.User, error) {
+	return model.NewUser().ListUsers()
 }

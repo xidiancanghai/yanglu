@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+	"yanglu/config"
 	"yanglu/service/model"
 
 	"github.com/pkg/sftp"
@@ -25,7 +26,15 @@ func NewHostInfoService() *HostInfoService {
 	return &HostInfoService{}
 }
 
-func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd string, department string) (*model.HostInfo, error) {
+func (hs *HostInfoService) GetHostNum() int {
+	list, _ := model.NewHostInfo().ListAll()
+	if list != nil {
+		return len(list)
+	}
+	return 0
+}
+
+func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd string, department string, businessName string) (*model.HostInfo, error) {
 
 	hsDao, err := model.NewHostInfo().GetHostInfoByIp(ip)
 	if err != nil {
@@ -39,11 +48,17 @@ func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd st
 	hsDao.SshUser = sshUser
 	hsDao.SshPasswd = sshPasswd
 	hsDao.Department = department
+	hsDao.BusinessName = businessName
 	// 检查有效性
 	err = hs.CheckPass(hsDao)
 	if err != nil {
 		return nil, err
 	}
+
+	if config.LicenseInfoConf.NodeMax <= hs.GetHostNum() {
+		return nil, fmt.Errorf("机器数量超过了最大限制%d台", config.LicenseInfoConf.NodeMax)
+	}
+
 	err = hsDao.Create()
 	if err != nil {
 		logrus.Error("Add err ", err)
@@ -62,6 +77,9 @@ func (hs *HostInfoService) BatchAdd(list []*model.HostInfo) error {
 	err := hs.BatchCheck(list)
 	if err != nil {
 		return err
+	}
+	if config.LicenseInfoConf.NodeMax < hs.GetHostNum()+len(list) {
+		return fmt.Errorf("机器数量超过了最大限制%d台", config.LicenseInfoConf.NodeMax)
 	}
 	err = model.NewHostInfo().BatchCreate(list)
 	if err != nil {

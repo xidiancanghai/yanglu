@@ -30,11 +30,11 @@ func (s *SearchHostByIp) Search(ip string) ([]*model.HostInfo, error) {
 	if ip == "" {
 		return nil, errors.New("ip地址为空")
 	}
-	hs, err := model.NewHostInfo().GetHostInfoByIp(ip)
+	hs, err := model.NewHostInfo().GetHostsByNetworkSegment(ip)
 	if err != nil {
 		return nil, err
 	}
-	return []*model.HostInfo{hs}, nil
+	return hs, nil
 }
 
 type SearchHostByDepartment struct {

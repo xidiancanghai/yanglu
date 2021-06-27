@@ -19,11 +19,12 @@ func NewHost() *Host {
 
 func (hc *Host) Add(ctx *gin.Context) {
 	params := &struct {
-		Ip         string `form:"ip" binding:"required"`
-		Port       int    `form:"port" binding:"required"`
-		SshUser    string `form:"ssh_user" binding:"required"`
-		SshPasswd  string `form:"ssh_passwd" binding:"required"`
-		Department string `form:"department"`
+		Ip           string `form:"ip" binding:"required"`
+		Port         int    `form:"port" binding:"required"`
+		SshUser      string `form:"ssh_user" binding:"required"`
+		SshPasswd    string `form:"ssh_passwd" binding:"required"`
+		Department   string `form:"department"`
+		BusinessName string `form:"business_name"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
@@ -38,7 +39,7 @@ func (hc *Host) Add(ctx *gin.Context) {
 		return
 	}
 	// 添加机器
-	host, err := service.NewHostInfoService().Add(params.Ip, params.Port, params.SshUser, params.SshPasswd, params.Department)
+	host, err := service.NewHostInfoService().Add(params.Ip, params.Port, params.SshUser, params.SshPasswd, params.Department, params.BusinessName)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
