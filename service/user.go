@@ -15,7 +15,7 @@ func NewUserService() *UserService {
 	return &UserService{}
 }
 
-func (us *UserService) AddUser(name string, passwd string, authority int, department string) (*model.User, error) {
+func (us *UserService) AddUser(name string, passwd string, authority []int, department string) (*model.User, error) {
 
 	if config.LicenseInfoConf.UserManage == 0 {
 		return nil, errors.New("当前系统没有添加用户权限")
@@ -32,7 +32,7 @@ func (us *UserService) AddUser(name string, passwd string, authority int, depart
 	}
 	u.Name = name
 	u.Passwd = passwd
-	u.Authority = model.Ints{authority}
+	u.Authority = authority
 	u.Department = department
 	err = u.Create()
 	if err != nil {

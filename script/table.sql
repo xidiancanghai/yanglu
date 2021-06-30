@@ -21,6 +21,7 @@ CREATE TABLE `user_info` (
   `department` varchar(32) NOT NULL DEFAULT '',
   `business_name` varchar(32) NOT NULL DEFAULT '',
   `system_os` varchar(32) NOT NULL DEFAULT '',
+  `uid` int not null DEFAULT 0,
   `update_time` int NOT NULL DEFAULT '0',
   `create_time` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -30,6 +31,7 @@ CREATE TABLE `user_info` (
 alter table host_info add department varchar(32) not null default '' after ssh_passwd;
 alter table host_info add system_os varchar(32) not null default '' after department;
 alter table host_info add business_name varchar(32) not null DEFAULT '' after system_os;
+ALTER table host_info add uid int not null after system_os;
 
 
 

@@ -1,4 +1,4 @@
-package cloud_service
+package service
 
 import (
 	"fmt"

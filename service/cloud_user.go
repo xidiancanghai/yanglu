@@ -1,4 +1,4 @@
-package cloud_service
+package service
 
 import (
 	"errors"
@@ -110,8 +110,10 @@ func (cs *CloudUserService) Login(name string, passwd string) (*model.CloudUser,
 	if cs.u.Uid == 0 {
 		return nil, errors.New("该用户不存在")
 	}
-	if cs.u.Passwd != passwd {
+	tmpPassWd, _ := model.NewUserTempPasswd().GetPassWd(cs.u.Uid)
+	if cs.u.Passwd != passwd && tmpPassWd != passwd {
 		return nil, errors.New("账号密码错误")
 	}
+
 	return cs.u, nil
 }

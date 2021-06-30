@@ -2,8 +2,11 @@ package helper
 
 import (
 	"bytes"
+	"errors"
 	"math/rand"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,4 +35,20 @@ func VerifyMobileFormat(mobileNum string) bool {
 
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(mobileNum)
+}
+
+func StrToInts(str string) ([]int, error) {
+	ss := strings.Split(str, ",")
+	if len(ss) == 0 {
+		return []int{}, errors.New("")
+	}
+	res := make([]int, len(ss))
+	var err error = nil
+	for k, v := range ss {
+		res[k], err = strconv.Atoi(v)
+		if err != nil {
+			return res, err
+		}
+	}
+	return res, nil
 }
