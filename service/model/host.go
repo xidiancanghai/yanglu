@@ -2,7 +2,9 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"time"
+	"yanglu/config"
 	"yanglu/service/data"
 
 	"github.com/sirupsen/logrus"
@@ -18,6 +20,7 @@ type HostInfo struct {
 	Department   string `json:"department"`
 	BusinessName string `json:"business_name"`
 	SystemOs     string `json:"system_os"`
+	Uid          int    `json:"-"`
 	UpdateTime   int64  `json:"-"`
 	CreateTime   int64  `json:"-"`
 }
@@ -133,9 +136,12 @@ func (h *HostInfo) ListAll() ([]*HostInfo, error) {
 	return list, nil
 }
 
-func (h *HostInfo) SystemOsDistribute() ([]map[string]interface{}, error) {
+func (h *HostInfo) SystemOsDistribute(uid int) ([]map[string]interface{}, error) {
 	list := []map[string]interface{}{}
 	sqll := "select system_os, count(*) as num from host_info group by system_os order by num desc"
+	if config.IsCloud() {
+		sqll = fmt.Sprintf("select system_os, count(*) as num from host_info where uid = %d group by system_os order by num desc", uid)
+	}
 	rows, err := data.GetDB().Raw(sqll).Rows()
 	if err != nil && err != gorm.ErrRecordNotFound {
 		logrus.Error("SystemOsDistribute err ", err)

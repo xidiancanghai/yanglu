@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
 	"yanglu/service"
@@ -39,7 +40,7 @@ func (hc *Host) Add(ctx *gin.Context) {
 		return
 	}
 	// 添加机器
-	host, err := service.NewHostInfoService().Add(params.Ip, params.Port, params.SshUser, params.SshPasswd, params.Department, params.BusinessName)
+	host, err := service.NewHostInfoServiceWithUid(uid).Add(params.Ip, params.Port, params.SshUser, params.SshPasswd, params.Department, params.BusinessName)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -75,7 +76,7 @@ func (hc *Host) BatchAdd(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	err = service.NewHostInfoService().BatchAdd(hostList)
+	err = service.NewHostInfoServiceWithUid(uid).BatchAdd(hostList)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -96,11 +97,11 @@ func (hc *Host) UpdateDepartment(ctx *gin.Context) {
 	}
 	uid := ctx.GetInt("uid")
 	// 先校验权限
-	if !service.NewUserService().HasAuthority(uid, model.AuthorityAddHost) {
+	if !config.IsCloud() && !service.NewUserService().HasAuthority(uid, model.AuthorityAddHost) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限添加主机", errors.New("你没有权限添加主机"))
 		return
 	}
-	err := service.NewHostInfoService().UpdateDepartment(params.Ip, params.Department)
+	err := service.NewHostInfoServiceWithUid(uid).UpdateDepartment(params.Ip, params.Department)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -118,13 +119,13 @@ func (hc *Host) SearchHost(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
 		return
 	}
-	//uid := ctx.GetInt("uid")
+	uid := ctx.GetInt("uid")
 	searchHost := service.NewSearchHostFactory().CreateSearch(params.Type)
 	if searchHost == nil {
 		helper.ErrRsp(ctx, def.CodeErr, "请求类型错误", nil)
 		return
 	}
-	list, err := searchHost.Search(params.Condition)
+	list, err := searchHost.Search(uid, params.Condition)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -143,7 +144,8 @@ func (hc *Host) GetVulnerabilityInfo(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
 		return
 	}
-	vs, err := service.NewVulnerabilityService(params.Ip)
+	uid := ctx.GetInt("uid")
+	vs, err := service.NewVulnerabilityService(uid, params.Ip)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -159,7 +161,8 @@ func (hc *Host) GetVulnerabilityInfo(ctx *gin.Context) {
 }
 
 func (hc *Host) ListAll(ctx *gin.Context) {
-	list, err := service.NewHostInfoService().ListAll()
+	uid := ctx.GetInt("uid")
+	list, err := service.NewHostInfoServiceWithUid(uid).ListAll()
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -170,7 +173,8 @@ func (hc *Host) ListAll(ctx *gin.Context) {
 }
 
 func (hc *Host) VulnerabilityDistribute(ctx *gin.Context) {
-	list, err := service.NewEmptyVulnerabilityService().VulnerabilityDistribute()
+	uid := ctx.GetInt("uid")
+	list, err := service.NewEmptyVulnerabilityService().VulnerabilityDistribute(uid)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -181,7 +185,8 @@ func (hc *Host) VulnerabilityDistribute(ctx *gin.Context) {
 }
 
 func (hc *Host) SystemOsDistribute(ctx *gin.Context) {
-	list, err := service.NewHostInfoService().SystemOsDistribute()
+	uid := ctx.GetInt("uid")
+	list, err := service.NewHostInfoService().SystemOsDistribute(uid)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -189,4 +194,8 @@ func (hc *Host) SystemOsDistribute(ctx *gin.Context) {
 	helper.OKRsp(ctx, gin.H{
 		"list": list,
 	})
+}
+
+func (hc *Host) SetIp(ctx *gin.Context) {
+
 }

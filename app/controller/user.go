@@ -60,7 +60,7 @@ func (u *User) AddUser(ctx *gin.Context) {
 	params := &struct {
 		Name       string `form:"name" binding:"required"`
 		Passwd     string `form:"passwd" binding:"required"`
-		Authority  int    `form:"authority" binding:"required"`
+		Authority  string `form:"authority" binding:"required"`
 		Department string `form:"department" binding:"required"`
 	}{}
 
@@ -80,8 +80,13 @@ func (u *User) AddUser(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限添加用户", errors.New("你没有权限添加用户"))
 		return
 	}
+	authority, err := helper.StrToInts(params.Authority)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
 
-	usr, err := service.NewUserService().AddUser(params.Name, params.Passwd, params.Authority, params.Department)
+	usr, err := service.NewUserService().AddUser(params.Name, params.Passwd, authority, params.Department)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return

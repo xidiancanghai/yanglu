@@ -52,6 +52,7 @@ func host(r *gin.Engine) {
 		host.GET("/list_all", interceptor.NewInterceptor().ParseToken, controller.NewHost().ListAll)
 		host.GET("/vulnerability_distribute", interceptor.NewInterceptor().ParseToken, controller.NewHost().VulnerabilityDistribute)
 		host.GET("/system_os_distribute", interceptor.NewInterceptor().ParseToken, controller.NewHost().SystemOsDistribute)
+		host.POST("/set_ip", interceptor.NewInterceptor().ParseToken, controller.NewHost().SetIp)
 	}
 }
 
