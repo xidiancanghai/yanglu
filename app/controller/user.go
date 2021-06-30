@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
 	"yanglu/service"
@@ -17,12 +18,49 @@ func NewUser() *User {
 	return &User{}
 }
 
+func (u *User) Register(ctx *gin.Context) {
+	params := &struct {
+		Company      string `form:"company" binding:"required"`
+		Phone        string `form:"phone" binding:"required"`
+		Email        string `form:"email" binding:"required"`
+		Passwd       string `form:"passwd" binding:"required"`
+		CaptchaId    string `form:"captcha_id" binding:"required"`
+		CaptchaValue string `form:"captcha_value" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+
+	if err := service.NewUtilService().ValidateCaptcha(params.CaptchaId, params.CaptchaValue); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+
+	cs := service.NewEmptyCloudUserService()
+	cloudUser, err := cs.Register(params.Company, params.Phone, params.Email, params.Passwd)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	token, err := service.NewTokenService(cloudUser.Uid).BuildToken()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	res := gin.H{
+		"token": token,
+	}
+	helper.OKRsp(ctx, res)
+}
+
 func (u *User) AddUser(ctx *gin.Context) {
 
 	params := &struct {
 		Name       string `form:"name" binding:"required"`
 		Passwd     string `form:"passwd" binding:"required"`
-		Authority  int    `form:"authority" binding:"required"`
+		Authority  string `form:"authority" binding:"required"`
 		Department string `form:"department" binding:"required"`
 	}{}
 
@@ -42,8 +80,13 @@ func (u *User) AddUser(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限添加用户", errors.New("你没有权限添加用户"))
 		return
 	}
+	authority, err := helper.StrToInts(params.Authority)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
 
-	usr, err := service.NewUserService().AddUser(params.Name, params.Passwd, params.Authority, params.Department)
+	usr, err := service.NewUserService().AddUser(params.Name, params.Passwd, authority, params.Department)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -54,25 +97,45 @@ func (u *User) AddUser(ctx *gin.Context) {
 
 func (u *User) Login(ctx *gin.Context) {
 	params := &struct {
-		Name   string `form:"name" binding:"required"`
-		Passwd string `form:"passwd" binding:"required"`
+		Name         string `form:"name" binding:"required"`
+		Passwd       string `form:"passwd" binding:"required"`
+		CaptchaId    string `form:"captcha_id"`
+		CaptchaValue string `form:"captcha_value"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	usr, err := service.NewUserService().Login(params.Name, params.Passwd)
+
+	if err := service.NewUtilService().ValidateCaptcha(params.CaptchaId, params.CaptchaValue); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+
+	uid := 0
+	if config.IsCloud() {
+		cs := service.NewEmptyCloudUserService()
+		user, err := cs.Login(params.Name, params.Passwd)
+		if err != nil {
+			helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+			return
+		}
+		uid = user.Uid
+	} else {
+		usr, err := service.NewUserService().Login(params.Name, params.Passwd)
+		if err != nil {
+			helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+			return
+		}
+		uid = usr.Uid
+	}
+	token, err := service.NewTokenService(uid).BuildToken()
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
-	token, err := service.NewTokenService(usr.Uid).BuildToken()
-	if err != nil {
-		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
-		return
-	}
-	service.NewActionLogService(usr.Uid).Login()
+	service.NewActionLogService(uid).Login()
 	res := gin.H{
 		"token": token,
 	}
@@ -153,4 +216,14 @@ func (u *User) DeleteUser(ctx *gin.Context) {
 		return
 	}
 	helper.OKRsp(ctx, gin.H{})
+}
+
+func (u *User) ListUsers(ctx *gin.Context) {
+	us := service.NewUserService()
+	list, err := us.ListUsers()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{"list": list})
 }

@@ -37,7 +37,7 @@ func (c *Ints) Scan(input interface{}) error {
 }
 
 type User struct {
-	Uid        int    `gorm:"uid" json:"uid"`
+	Uid        int    `gorm:"primaryKey" json:"uid"`
 	Name       string `gorm:"name" json:"name"`
 	Passwd     string `gorm:"passwd" json:"-"`
 	Authority  Ints   `gorm:"authority" json:"authority"`
@@ -117,4 +117,14 @@ func (u *User) Updates(m map[string]interface{}) error {
 		return tx.Error
 	}
 	return nil
+}
+
+func (u *User) ListUsers() ([]*User, error) {
+	list := []*User{}
+	tx := data.GetDB().Model(u).Where(" is_delete = 0").Find(&list)
+	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
+		logrus.Error("Updates err", tx)
+		return nil, tx.Error
+	}
+	return list, nil
 }

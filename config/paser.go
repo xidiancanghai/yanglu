@@ -32,18 +32,25 @@ func (env EnvType) ToString() string {
 	}
 }
 
+type Email struct {
+	User   string `toml:"user"`
+	Passwd string `toml:"passwd"`
+	Addr   string `toml:"addr"`
+	Host   string `toml:"host"`
+}
+
 type Config struct {
 	Environment struct {
 		Env    EnvType `toml:"env"`
 		LogDir string  `toml:"logDir"`
 	} `toml:"environment"`
 	Mysql struct {
-		Api struct {
+		Soft struct {
 			Dsn string `toml:"dsn"`
-		} `toml:"api"`
-		Cron struct {
+		} `toml:"soft"`
+		Cloud struct {
 			Dsn string `toml:"dsn"`
-		} `toml:"cron"`
+		} `toml:"cloud"`
 	} `toml:"mysql"`
 	Http struct {
 		Port int `toml:"port"`
@@ -53,6 +60,7 @@ type Config struct {
 		User   string `toml:"user"`
 		PassWd string `toml:"pass_wd"`
 	} `toml:"amdin_user"`
+	Email Email `toml:"email"`
 
 	//Alert struct {
 	//	Open bool     `toml:"open"`
@@ -123,11 +131,10 @@ func GetLogPath() string {
 }
 
 func GetMysqlApi() string {
-	return conf.Mysql.Api.Dsn
-}
-
-func GetMysqlCron() string {
-	return conf.Mysql.Cron.Dsn
+	if IsCloud() {
+		return conf.Mysql.Cloud.Dsn
+	}
+	return conf.Mysql.Soft.Dsn
 }
 
 func GetHttpPort() int {
@@ -136,4 +143,8 @@ func GetHttpPort() int {
 
 func GetAdminInfo() (string, string) {
 	return conf.AdminUser.User, conf.AdminUser.PassWd
+}
+
+func GetEmailConf() *Email {
+	return &conf.Email
 }

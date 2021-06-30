@@ -20,7 +20,7 @@ func TestHostInfo(t *testing.T) {
 
 	hs := NewHostInfoService()
 	//_, err := hs.Add("112.125.25.235", 22, "testlsm", "testlsm123", "管理")
-	_, err := hs.Add("192.168.1.1", 110, "admin", "admin", "")
+	_, err := hs.Add("192.168.1.1", 110, "admin", "admin", "", "hello")
 	fmt.Println("err = ", err)
 }
 

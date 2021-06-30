@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+	"yanglu/config"
 	"yanglu/service/model"
 
 	"github.com/pkg/sftp"
@@ -19,13 +20,26 @@ import (
 )
 
 type HostInfoService struct {
+	uid int
 }
 
 func NewHostInfoService() *HostInfoService {
 	return &HostInfoService{}
 }
 
-func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd string, department string) (*model.HostInfo, error) {
+func NewHostInfoServiceWithUid(uid int) *HostInfoService {
+	return &HostInfoService{uid: uid}
+}
+
+func (hs *HostInfoService) GetHostNum() int {
+	list, _ := model.NewHostInfo().ListAll()
+	if list != nil {
+		return len(list)
+	}
+	return 0
+}
+
+func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd string, department string, businessName string) (*model.HostInfo, error) {
 
 	hsDao, err := model.NewHostInfo().GetHostInfoByIp(ip)
 	if err != nil {
@@ -34,16 +48,24 @@ func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd st
 	if hsDao.Id != 0 {
 		return nil, errors.New("已经添加了该机器")
 	}
+	// 针对云端版，需要知道是谁添加的uid
+	hsDao.Uid = hs.uid
 	hsDao.Ip = ip
 	hsDao.Port = port
 	hsDao.SshUser = sshUser
 	hsDao.SshPasswd = sshPasswd
 	hsDao.Department = department
+	hsDao.BusinessName = businessName
 	// 检查有效性
 	err = hs.CheckPass(hsDao)
 	if err != nil {
 		return nil, err
 	}
+
+	if config.LicenseInfoConf.NodeMax <= hs.GetHostNum() {
+		return nil, fmt.Errorf("机器数量超过了最大限制%d台", config.LicenseInfoConf.NodeMax)
+	}
+
 	err = hsDao.Create()
 	if err != nil {
 		logrus.Error("Add err ", err)
@@ -62,6 +84,12 @@ func (hs *HostInfoService) BatchAdd(list []*model.HostInfo) error {
 	err := hs.BatchCheck(list)
 	if err != nil {
 		return err
+	}
+	if config.LicenseInfoConf.NodeMax < hs.GetHostNum()+len(list) {
+		return fmt.Errorf("机器数量超过了最大限制%d台", config.LicenseInfoConf.NodeMax)
+	}
+	for k, _ := range list {
+		list[k].Uid = hs.uid
 	}
 	err = model.NewHostInfo().BatchCreate(list)
 	if err != nil {
@@ -140,6 +168,9 @@ func (hs *HostInfoService) UpdateDepartment(ip string, department string) error 
 	if err != nil {
 		logrus.Error("Department err ", err)
 		return err
+	}
+	if config.IsCloud() && hsDao.Uid != hs.uid {
+		return errors.New("你不是该台主机管理员")
 	}
 	hsDao.Department = department
 	hsDao.UpdateTime = time.Now().Unix()
@@ -394,10 +425,11 @@ func (hc *HostInfoService) ListAll() (interface{}, error) {
 	if len(hosts) == 0 {
 		return nil, errors.New("暂未有任何机器")
 	}
-	list := make([]struct {
+	type Item struct {
 		*model.HostInfo
 		CheckStatus int `json:"check_status"`
-	}, len(hosts))
+	}
+	list := make([]Item, len(hosts))
 	ips := make([]string, len(hosts))
 	for k, v := range hosts {
 		ips[k] = v.Ip
@@ -413,9 +445,19 @@ func (hc *HostInfoService) ListAll() (interface{}, error) {
 			list[k].CheckStatus = t
 		}
 	}
-	return list, nil
+	res := make([]Item, 0)
+	if config.IsCloud() {
+		for k, v := range list {
+			if v.Uid == hc.uid {
+				res = append(res, list[k])
+			}
+		}
+	} else {
+		res = list
+	}
+	return res, nil
 }
 
-func (hs *HostInfoService) SystemOsDistribute() (interface{}, error) {
-	return model.NewHostInfo().SystemOsDistribute()
+func (hs *HostInfoService) SystemOsDistribute(uid int) (interface{}, error) {
+	return model.NewHostInfo().SystemOsDistribute(uid)
 }

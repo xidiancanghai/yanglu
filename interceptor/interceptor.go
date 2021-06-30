@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"net/http"
+	"time"
 	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
@@ -16,6 +17,20 @@ type Interceptor struct {
 
 func NewInterceptor() *Interceptor {
 	return &Interceptor{}
+}
+
+func (ic *Interceptor) LicenseExpired(ctx *gin.Context) {
+	if config.LicenseInfoConf.ExpireTime < time.Now().Unix() {
+		ctx.AbortWithStatusJSON(http.StatusOK, helper.Rsp(def.CodeErr, "当前license已经过期", nil))
+		return
+	}
+}
+
+func (ic *Interceptor) Cloud(ctx *gin.Context) {
+	if !config.IsCloud() {
+		ctx.AbortWithStatusJSON(http.StatusOK, helper.Rsp(def.CodeErr, "当前非云端版本", nil))
+		return
+	}
 }
 
 func (ic *Interceptor) ParseToken(ctx *gin.Context) {
