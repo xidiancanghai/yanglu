@@ -28,6 +28,9 @@ func main() {
 	if err := config.InitLicenseConfig(); err != nil {
 		log.Fatal("启动错误 err = ", err)
 	}
+
+	log.Println("conf = ", *config.LicenseInfoConf)
+
 	config.InitEnvConf()
 	data.InitMysql()
 	data.InitMemoryCache()

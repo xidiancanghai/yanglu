@@ -30,10 +30,10 @@ func (us *UtilService) GetCaptcha(id string) (*bytes.Buffer, error) {
 }
 
 func (us *UtilService) ValidateCaptcha(id string, value string) error {
-	if config.IsLocal() && id == "" {
+	if !config.IsCloud() {
 		return nil
 	}
-	if !config.IsCloud() {
+	if config.IsLocal() && id == "" {
 		return nil
 	}
 	if captcha.VerifyString(id, value) {

@@ -116,7 +116,6 @@ func InitLicenseConfig() error {
 	}
 
 	LicenseInfoConf.ExpireTime = theTime.Unix()
-
 	return nil
 }
 
