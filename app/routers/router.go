@@ -26,6 +26,7 @@ func user(r *gin.Engine) {
 	{
 		user.POST("/user/register", interceptor.NewInterceptor().Cloud, controller.NewUser().Register)
 		user.POST("/add_user", interceptor.NewInterceptor().ParseToken, controller.NewUser().AddUser)
+		user.POST("/reset_passwd", interceptor.NewInterceptor().ParseToken, controller.NewUser().ResetPasswd)
 		user.POST("/login", controller.NewUser().Login)
 		user.GET("/get_user_info", interceptor.NewInterceptor().ParseToken, controller.NewUser().GetUserInfo)
 		user.POST("/set_authority", interceptor.NewInterceptor().ParseToken, controller.NewUser().SetAuthority)
