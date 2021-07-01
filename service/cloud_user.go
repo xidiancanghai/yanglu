@@ -117,3 +117,24 @@ func (cs *CloudUserService) Login(name string, passwd string) (*model.CloudUser,
 
 	return cs.u, nil
 }
+
+func (cs *CloudUserService) ResetPasswd(uid int, passwd string) error {
+	u, err := model.NewCloudUser().GetUser(map[string]interface{}{
+		"uid": uid,
+	})
+	if err != nil {
+		logrus.Error("ResetPasswd err = ", err)
+		return err
+	}
+	if u.Uid == 0 {
+		return errors.New("该用户不存在")
+	}
+	err = u.Updates(map[string]interface{}{
+		"passwd": passwd,
+	})
+	if err != nil {
+		logrus.Error("ResetPasswd err = ", err)
+		return err
+	}
+	return nil
+}

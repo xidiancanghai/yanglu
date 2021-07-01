@@ -62,3 +62,18 @@ func (cu *CloudUser) GetUser(cond map[string]interface{}) (*CloudUser, error) {
 	}
 	return u, nil
 }
+
+func (cu *CloudUser) Updates(m map[string]interface{}) error {
+	if len(m) == 0 {
+		return errors.New("参数错误")
+	}
+	if cu.Uid == 0 {
+		return errors.New("主键id错误")
+	}
+	tx := data.GetDB().Model(cu).Updates(m)
+	if tx.Error != nil {
+		logrus.Error("Updates err ", tx)
+		return tx.Error
+	}
+	return nil
+}

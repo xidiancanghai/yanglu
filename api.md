@@ -154,3 +154,10 @@
         }
     }
 
+### 10 修改密码
+     curl -X POST http://127.0.0.1:8090/user/reset_passwd -d 'uid=31&pass_wd=1233'
+     {
+         "code":0,
+         "message":"ok",
+         "data":{}
+    }
