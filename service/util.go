@@ -36,6 +36,9 @@ func (us *UtilService) ValidateCaptcha(id string, value string) error {
 	if config.IsLocal() && id == "" {
 		return nil
 	}
+	if !config.IsCloud() {
+		return nil
+	}
 	if captcha.VerifyString(id, value) {
 		return nil
 	}
