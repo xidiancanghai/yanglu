@@ -150,3 +150,19 @@ func (us *UserService) DeleteUser(name string) error {
 func (us *UserService) ListUsers() ([]*model.User, error) {
 	return model.NewUser().ListUsers()
 }
+
+func (us *UserService) ResetPasswd(uid int, passwd string) error {
+	user, err := model.NewUser().GetUserById(uid)
+	if err != nil {
+		logrus.Error("ResetPasswd err ", err)
+		return err
+	}
+	err = user.Updates(map[string]interface{}{
+		"passwd": passwd,
+	})
+	if err != nil {
+		logrus.Error("ResetPasswd err ", err)
+		return err
+	}
+	return nil
+}

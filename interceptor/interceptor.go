@@ -40,7 +40,7 @@ func (ic *Interceptor) ParseToken(ctx *gin.Context) {
 	}
 	token := ctx.GetHeader("token")
 	if config.IsLocal() && token == "" {
-		ctx.Set("uid", 1)
+		//ctx.Set("uid", 1)
 		return
 	}
 	if !config.IsLocal() && len(token) <= 0 {
