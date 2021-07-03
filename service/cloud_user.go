@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/smtp"
+	"strings"
 	"yanglu/config"
 	"yanglu/helper"
 	"yanglu/service/model"
@@ -83,8 +84,7 @@ func (cs *CloudUserService) SendEmail(msg string) error {
 	e.Subject = "引力云临时账号密码"
 	//设置文件发送的内容
 	e.Text = []byte(msg)
-	//设置服务器相关的配置
-	err := e.Send(emailConf.Addr, smtp.PlainAuth("", emailConf.User, emailConf.Passwd, emailConf.Host))
+	err := e.Send(strings.TrimSpace(emailConf.Addr), smtp.PlainAuth("", emailConf.User, emailConf.Passwd, strings.TrimSpace(emailConf.Host)))
 	if err != nil {
 		logrus.Error("err = ", err)
 		return err
@@ -137,4 +137,43 @@ func (cs *CloudUserService) ResetPasswd(uid int, passwd string) error {
 		return err
 	}
 	return nil
+}
+
+func (cs *CloudUserService) FindPassWd(account string) (*model.CloudUser, error) {
+	var err error = nil
+	if helper.VerifyMobileFormat(account) {
+		cs.u, err = cs.u.GetUser(map[string]interface{}{
+			"phone": account,
+		})
+	} else if helper.VerifyEmailFormat(account) {
+		cs.u, err = cs.u.GetUser(map[string]interface{}{
+			"email": account,
+		})
+	} else {
+		return nil, errors.New("请输入正确的邮箱或者手机号")
+	}
+	if err != nil {
+		logrus.Error("FindPassWd err ", err)
+		return nil, err
+	}
+	tmpPassWd := helper.GetRandomStr(10)
+	msg := fmt.Sprintf("引力云的临时密码:%s，请注意查收", tmpPassWd)
+	if err := cs.SendEmail(msg); err != nil {
+		logrus.Error("FindPassWd err ", err)
+		return nil, err
+	}
+	tu, err := model.NewUserTempPasswd().GetTempUser(cs.u.Uid)
+	if err != nil {
+		logrus.Error("FindPassWd err ", err)
+		return nil, err
+	}
+	tu.PassWd = tmpPassWd
+	err = tu.Updates(map[string]interface{}{
+		"pass_wd": tu.PassWd,
+	})
+	if err != nil {
+		logrus.Error("FindPassWd err ", err)
+		return nil, err
+	}
+	return cs.u, nil
 }

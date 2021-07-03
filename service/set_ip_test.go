@@ -16,7 +16,16 @@ func TestSetIp(t *testing.T) {
 
 	// init db
 	data.InitMysql()
-	ss := NewSetIpService("172.0.0.1")
+	ss := NewSetIpService("192.168.1.126")
+	// data, err := ss.Gateway4()
+	// fmt.Println("err = ", err, " data = ", string(data))
+
+	// is, err := ss.IpHasUsed()
+	// fmt.Println("err = ", err, " is = ", is)
+
+	// server, err := ss.GetNameServer()
+	// fmt.Println("err = ", err, " server = ", server)
+
 	err := ss.SetIp()
 	fmt.Println("err = ", err)
 }

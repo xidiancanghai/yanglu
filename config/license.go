@@ -23,6 +23,7 @@ type LicenseInfo struct {
 	ExpireTimeStr string `json:"expire_time"`
 	Code          string `json:"code"`
 	IsCloud       int    `json:"is_cloud"`
+	Edition       int    `json:"edition"`
 	ExpireTime    int64
 }
 

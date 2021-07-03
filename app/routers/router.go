@@ -32,6 +32,7 @@ func user(r *gin.Engine) {
 		user.POST("/set_authority", interceptor.NewInterceptor().ParseToken, controller.NewUser().SetAuthority)
 		user.POST("/delete_user", interceptor.NewInterceptor().ParseToken, controller.NewUser().DeleteUser)
 		user.GET("/list_users", interceptor.NewInterceptor().ParseToken, controller.NewUser().ListUsers)
+		user.POST("/find_passwd", controller.NewUser().FindPassWd)
 	}
 }
 
@@ -82,5 +83,6 @@ func util(r *gin.Engine) {
 	{
 		util.GET("/get_captcha", controller.NewUtilController().GetCaptcha)
 		util.GET("/get_captcha_id", controller.NewUtilController().GetCaptchaId)
+		util.GET("/get_system_info", controller.NewUtilController().GetSystemInfo)
 	}
 }
