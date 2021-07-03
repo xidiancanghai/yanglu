@@ -23,7 +23,28 @@ func NewSetIpService(ip string) *SetIpService {
 	return &SetIpService{ip: ip}
 }
 
+func (ss *SetIpService) IpHasUsed() (bool, error) {
+	command := fmt.Sprintf("ping -c 1 %s > /dev/null && echo true || echo false", ss.ip)
+	output, err := exec.Command("/bin/sh", "-c", command).Output()
+	if err != nil {
+		logrus.Error("IpHasUsed err ", err)
+		return false, err
+	}
+	if string(output) == "true" {
+		return true, nil
+	}
+	return false, nil
+}
+
 func (ss *SetIpService) SetIp() error {
+	is, err := ss.IpHasUsed()
+	if err != nil {
+		logrus.Error("SetIp err ", err)
+		return err
+	}
+	if is {
+		return errors.New("该ip地址已经被占用")
+	}
 	cmd := exec.Command("cat", "/etc/issue")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -101,27 +122,29 @@ func (ss *SetIpService) Ubuntu() error {
 		logrus.Error("Ubuntu err ", err)
 		return err
 	}
-	conf := struct {
-		Network struct {
-			Version   string `yaml:"version"`
-			Ethernets struct {
-				Eth0 struct {
-					Dhcp4 bool `yaml:"dhcp4"`
-					Match struct {
-						Macaddress string `yaml:"macaddress"`
-					} `yaml:"match"`
-					SetName string `yaml:"set-name"`
-				} `yaml:"eth0"`
-			} `yaml:"ethernets"`
-		} `yaml:"network"`
-	}{}
+	// conf := struct {
+	// 	Network struct {
+	// 		Version   string `yaml:"version"`
+	// 		Ethernets struct {
+	// 			Eth0 struct {
+	// 				Dhcp4 bool `yaml:"dhcp4"`
+	// 				Match struct {
+	// 					Macaddress string `yaml:"macaddress"`
+	// 				} `yaml:"match"`
+	// 				SetName string `yaml:"set-name"`
+	// 			} `yaml:"eth0"`
+	// 		} `yaml:"ethernets"`
+	// 	} `yaml:"network"`
+	// }{}
 
-	if err := yaml.Unmarshal(data, &conf); err != nil {
+	confm := map[string]map[string]map[string]interface{}{}
+
+	if err := yaml.Unmarshal(data, &confm); err != nil {
 		logrus.Error("Ubuntu err ", err)
 		return err
 	}
 
-	logrus.Info("debug = ", conf)
+	logrus.Info("debug = ", confm)
 	// resConf := struct {
 	// 	NetWork struct {
 	// 		Ethernets struct {

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
 	"yanglu/service"
@@ -43,4 +44,11 @@ func (uc *UtilController) GetCaptcha(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
 	}
+}
+
+func (uc *UtilController) GetSystemInfo(ctx *gin.Context) {
+	helper.OKRsp(ctx, gin.H{
+		"max_node": config.LicenseInfoConf.NodeMax,
+		"edition":  config.LicenseInfoConf.Edition,
+	})
 }
