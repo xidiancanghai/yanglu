@@ -17,6 +17,6 @@ func TestSetIp(t *testing.T) {
 	// init db
 	data.InitMysql()
 	ss := NewSetIpService("172.0.0.1")
-	err := ss.SetIp()
+	err := ss.Ubuntu()
 	fmt.Println("err = ", err)
 }

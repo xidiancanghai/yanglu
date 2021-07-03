@@ -19,8 +19,12 @@ func TestSendEmail(t *testing.T) {
 	data.InitMysql()
 
 	cs := NewEmptyCloudUserService()
-	_, err := cs.Register("哈哈", "13152015823", "chmy2272120002@com", "123456")
-	if err != nil {
-		fmt.Println("err = ", err)
-	}
+	// _, err := cs.Register("哈哈", "13152015823", "chmy2272120002@outlook.com", "123456")
+	// //cs.SendEmail("hello")
+	// if err != nil {
+	// 	fmt.Println("err = ", err)
+	// }
+	u, err := cs.FindPassWd("13152015823")
+	fmt.Println("err = ", err)
+	fmt.Println(" u = ", *u)
 }

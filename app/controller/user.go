@@ -227,3 +227,48 @@ func (u *User) ListUsers(ctx *gin.Context) {
 	}
 	helper.OKRsp(ctx, gin.H{"list": list})
 }
+
+func (u *User) ResetPasswd(ctx *gin.Context) {
+	uid := ctx.GetInt("uid")
+	params := &struct {
+		Passwd string `form:"pass_wd" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	var err error = nil
+	if config.IsCloud() {
+		err = service.NewEmptyCloudUserService().ResetPasswd(uid, params.Passwd)
+	} else {
+		err = service.NewUserService().ResetPasswd(uid, params.Passwd)
+	}
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{})
+}
+
+func (u *User) FindPassWd(ctx *gin.Context) {
+	params := &struct {
+		Account string `form:"account" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	cu, err := service.NewEmptyCloudUserService().FindPassWd(params.Account)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	token, err := service.NewTokenService(cu.Uid).BuildToken()
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{"token": token})
+}

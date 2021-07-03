@@ -161,3 +161,60 @@
          "message":"ok",
          "data":{}
     }
+
+### 11 查看软件包信息
+    curl -X GET http://127.0.0.1:8090/host/get_vulnerability_info?ip=47.104.213.134
+    {   
+        "code":0,
+        "message":"ok",
+        "data":{
+            "list":[
+                {
+                    "installed_version":"0.6.55-0ubuntu12~20.04.4",
+                    "pkg_name":"accountsservice",
+                    "severity":"LOW",
+                    "vulnerability_id":"CVE-2012-6655"
+                }
+            ]
+        }
+    }
+
+
+###  12 查看系统信息
+
+    curl -X GET http://127.0.0.1:8090/util/get_system_info
+
+    {   
+        "code":0,
+        "message":"ok",
+        "data":{
+            "edition":0, // 系统版本 0， 免费版， 1 企业版
+            "max_node":2
+        }
+    }
+
+### 13 用户登陆
+
+    curl -X POST http://127.0.0.1:8090/user/login -d 'name=fudake&passwd=fudake&captcha_id=123345&captcha_value=1234'
+
+    {
+        "code": 0,
+        "message": "ok",
+        "data": {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVaWQiOjMyLCJleHAiOjE2MjU3MjQ5Mjl9.cGRvc4t3QermU9QGG83OnnWB5GySpT_8aZK0A_o_Gq0"
+        }
+    }
+
+### 14 找回密码
+
+    curl -X POST http://127.0.0.1:8090/user/find_passwd -d 'account=13152015823'
+
+    {
+        "code":0,
+        "message":"ok",
+        "data":{
+            "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVaWQiOjEwMDAwMTgsImV4cCI6MTYyNTg4OTk5N30.fNEz_hW3qpZQsY-6DICdVPYFH5YACW7WfqJUuy-7EbM"
+        }
+    }
+    account 是手机号或邮箱
+
