@@ -218,3 +218,14 @@
     }
     account 是手机号或邮箱
 
+
+### 15 用户注册
+    curl -X POST http://127.0.0.1:8090/user/register -d 'company=123&phone=13155555555&emal=123@qq.com&passwd=1234&captcha_id=1234&captcha_value=123456'
+
+    {
+        "code":0,
+        "message":"ok",
+        "data":{
+            "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVaWQiOjMwLCJleHAiOjE2MjUyNzY0NjB9.6esJoJwcIDulSJNUTGl3ScqmwbiAReP8oWcFM_8i2B4"
+        }
+    }
