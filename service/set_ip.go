@@ -11,7 +11,7 @@ import (
 	"strings"
 	"yanglu/config"
 
-	"github.com/goinggo/mapstructure"
+	mapstructure "github.com/goinggo/mapstructure"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )

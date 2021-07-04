@@ -54,6 +54,9 @@ github.com/go-playground/universal-translator
 github.com/go-playground/validator/v10
 # github.com/go-sql-driver/mysql v1.6.0
 github.com/go-sql-driver/mysql
+# github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9
+## explicit
+github.com/goinggo/mapstructure
 # github.com/golang/protobuf v1.5.1
 ## explicit
 github.com/golang/protobuf/proto
