@@ -24,7 +24,7 @@ func InitRouter() *gin.Engine {
 func user(r *gin.Engine) {
 	user := r.Group("/user")
 	{
-		user.POST("/user/register", interceptor.NewInterceptor().Cloud, controller.NewUser().Register)
+		user.POST("/register", interceptor.NewInterceptor().Cloud, controller.NewUser().Register)
 		user.POST("/add_user", interceptor.NewInterceptor().ParseToken, controller.NewUser().AddUser)
 		user.POST("/reset_passwd", interceptor.NewInterceptor().ParseToken, controller.NewUser().ResetPasswd)
 		user.POST("/login", controller.NewUser().Login)
