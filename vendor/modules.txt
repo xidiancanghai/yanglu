@@ -135,7 +135,7 @@ github.com/wechatpay-apiv3/wechatpay-go/core/downloader
 github.com/wechatpay-apiv3/wechatpay-go/core/option
 github.com/wechatpay-apiv3/wechatpay-go/services
 github.com/wechatpay-apiv3/wechatpay-go/services/payments
-github.com/wechatpay-apiv3/wechatpay-go/services/payments/h5
+github.com/wechatpay-apiv3/wechatpay-go/services/payments/native
 github.com/wechatpay-apiv3/wechatpay-go/utils
 github.com/wechatpay-apiv3/wechatpay-go/utils/task
 # golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a

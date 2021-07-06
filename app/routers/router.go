@@ -18,6 +18,7 @@ func InitRouter() *gin.Engine {
 	actionLog(r)
 	config(r)
 	util(r)
+	order(r)
 	return r
 }
 
@@ -84,5 +85,12 @@ func util(r *gin.Engine) {
 		util.GET("/get_captcha", controller.NewUtilController().GetCaptcha)
 		util.GET("/get_captcha_id", controller.NewUtilController().GetCaptchaId)
 		util.GET("/get_system_info", controller.NewUtilController().GetSystemInfo)
+	}
+}
+
+func order(r *gin.Engine) {
+	order := r.Group("/order")
+	{
+		order.GET("/config", controller.NewOrder().GetConfig)
 	}
 }

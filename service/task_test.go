@@ -16,7 +16,8 @@ func TestStartTask(t *testing.T) {
 	// init db
 	data.InitMysql()
 
-	// ts := NewTaskService()
+	ts := NewTaskService()
 
-	// ts.StartTask("112.125.25.235", 12)
+	task, _ := ts.AddFastTask("47.104.213.134")
+	ts.ExecuteTask(task)
 }

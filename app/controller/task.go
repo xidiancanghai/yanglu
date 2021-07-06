@@ -74,6 +74,7 @@ func (t *Task) AddTimedTask(ctx *gin.Context) {
 	params := &struct {
 		Ip        string `form:"ip" binding:"required"`
 		ExecuTime int64  `form:"execu_time" binding:"required"`
+		Name      string `form:"name" binding:"required"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
@@ -87,7 +88,7 @@ func (t *Task) AddTimedTask(ctx *gin.Context) {
 		return
 	}
 
-	task, err := service.NewTaskService().AddTimedTask(params.Ip, params.ExecuTime)
+	task, err := service.NewTaskService().AddTimedTask(params.Ip, params.ExecuTime, params.Name)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
@@ -104,6 +105,7 @@ func (t *Task) AddRepeatTask(ctx *gin.Context) {
 		Ip        string `form:"ip" binding:"required"`
 		ExecuTime int64  `form:"execu_time" binding:"required"`
 		Interval  int    `form:"interval" binding:"required"`
+		Name      string `form:"name" binding:"required"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
@@ -117,7 +119,7 @@ func (t *Task) AddRepeatTask(ctx *gin.Context) {
 		return
 	}
 
-	task, err := service.NewTaskService().AddRepeatTask(params.Ip, params.ExecuTime, params.Interval)
+	task, err := service.NewTaskService().AddRepeatTask(params.Ip, params.ExecuTime, params.Interval, params.Name)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
