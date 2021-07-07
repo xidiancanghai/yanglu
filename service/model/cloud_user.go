@@ -77,3 +77,26 @@ func (cu *CloudUser) Updates(m map[string]interface{}) error {
 	}
 	return nil
 }
+
+func (u *CloudUser) GetUserNames(uids []int) map[int]string {
+	if len(uids) == 0 {
+		return map[int]string{}
+	}
+	rows, err := data.GetDB().Model(u).Raw("select uid, phone from cloud_user_info where uid in (?)", uids).Rows()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		logrus.Error("GetUserNames err = ", err)
+		return map[int]string{}
+	}
+	if err != nil {
+		return map[int]string{}
+	}
+	defer rows.Close()
+	res := map[int]string{}
+	for rows.Next() {
+		var uid int
+		var name string
+		rows.Scan(&uid, &name)
+		res[uid] = name
+	}
+	return res
+}

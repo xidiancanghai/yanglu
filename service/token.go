@@ -33,6 +33,9 @@ func (ts *TokenService) BuildToken() (string, error) {
 	if config.IsOnline() {
 		secret = def.ApiJwtSecret
 	}
+	if config.IsCloud() {
+		secret = secret + "_cloud"
+	}
 	expireTime := 3600*24*7 + time.Now().Unix()
 
 	claims := Claims{

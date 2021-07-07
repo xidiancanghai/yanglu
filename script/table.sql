@@ -78,6 +78,8 @@ CREATE TABLE `vulnerability_log` (
   KEY `ip` (`ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
+alter table  vulnerability_log add fixed_version varchar(256) not null default '' after installed_version;
+
 
 select *, case pkg_name  when @pre_pkg then @curl_rank := @curl_rank + 1 else  @curl_rank := 1 end as c_rank, @pre_pkg := pkg_name   from (select * from vulnerability_log where ip = "112.125.25.235" and batch_id = 1  order by pkg_name, case severity when 'HIGH' then 3 when 'MEDIUM' then 2 else 0 end desc)
  as p, (select @pre_pkg := "", @curl_rank := '') as t 
@@ -123,3 +125,14 @@ create table user_tmp_passwd (
     `create_time` int NOT NULL DEFAULT '0',
     PRIMARY KEY(`uid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
+
+
+create table order_info  (
+    `id` int not null AUTO_INCREMENT,
+    `uid` int not null DEFAULT '',
+    `money` int not null 
+    `passwd` varchar(16) not null DEFAULT '',
+    `authority` varchar(32) NOT NULL DEFAULT '[]',
+    `create_time` int NOT NULL DEFAULT '0',
+    PRIMARY KEY(`uid`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4

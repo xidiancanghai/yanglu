@@ -58,7 +58,7 @@ func (ts *TaskService) AddFastTask(ip string) (*model.Task, error) {
 	return &task, nil
 }
 
-func (ts *TaskService) AddTimedTask(ip string, execuTime int64) (*model.Task, error) {
+func (ts *TaskService) AddTimedTask(ip string, execuTime int64, name string) (*model.Task, error) {
 	if config.LicenseInfoConf.SmartTask == 0 {
 		return nil, errors.New("当前系统没有添加智能任务权限")
 	}
@@ -67,6 +67,7 @@ func (ts *TaskService) AddTimedTask(ip string, execuTime int64) (*model.Task, er
 		Type:      model.TaskTypeTimedTask,
 		Status:    0,
 		ExecuTime: execuTime,
+		Name:      name,
 	}
 	err := task.Create()
 	if err != nil {
@@ -76,7 +77,7 @@ func (ts *TaskService) AddTimedTask(ip string, execuTime int64) (*model.Task, er
 	return &task, nil
 }
 
-func (ts *TaskService) AddRepeatTask(ip string, execuTime int64, interval int) (*model.Task, error) {
+func (ts *TaskService) AddRepeatTask(ip string, execuTime int64, interval int, name string) (*model.Task, error) {
 	if config.LicenseInfoConf.SmartTask == 0 {
 		return nil, errors.New("当前系统没有添加智能任务权限")
 	}
@@ -86,6 +87,7 @@ func (ts *TaskService) AddRepeatTask(ip string, execuTime int64, interval int) (
 		Status:      0,
 		ExecuTime:   execuTime,
 		IntervalDay: interval,
+		Name:        name,
 	}
 	err := task.Create()
 	if err != nil {
@@ -279,6 +281,7 @@ func (ts *TaskService) StartTask(taskItem *model.TaskItem) error {
 				VulnerabilityId:  v2.VulnerabilityId,
 				PkgName:          v2.PkgName,
 				InstalledVersion: v2.InstalledVersion,
+				FixedVersion:     v2.FixedVersion,
 				Severity:         v2.Severity,
 				CreateTime:       t,
 			})

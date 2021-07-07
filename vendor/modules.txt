@@ -118,6 +118,26 @@ github.com/sirupsen/logrus
 ## explicit
 # github.com/ugorji/go/codec v1.2.4
 github.com/ugorji/go/codec
+# github.com/wechatpay-apiv3/wechatpay-go v0.2.1
+## explicit
+github.com/wechatpay-apiv3/wechatpay-go/core
+github.com/wechatpay-apiv3/wechatpay-go/core/auth
+github.com/wechatpay-apiv3/wechatpay-go/core/auth/credentials
+github.com/wechatpay-apiv3/wechatpay-go/core/auth/signers
+github.com/wechatpay-apiv3/wechatpay-go/core/auth/validators
+github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers
+github.com/wechatpay-apiv3/wechatpay-go/core/cipher
+github.com/wechatpay-apiv3/wechatpay-go/core/cipher/ciphers
+github.com/wechatpay-apiv3/wechatpay-go/core/cipher/decryptors
+github.com/wechatpay-apiv3/wechatpay-go/core/cipher/encryptors
+github.com/wechatpay-apiv3/wechatpay-go/core/consts
+github.com/wechatpay-apiv3/wechatpay-go/core/downloader
+github.com/wechatpay-apiv3/wechatpay-go/core/option
+github.com/wechatpay-apiv3/wechatpay-go/services
+github.com/wechatpay-apiv3/wechatpay-go/services/payments
+github.com/wechatpay-apiv3/wechatpay-go/services/payments/native
+github.com/wechatpay-apiv3/wechatpay-go/utils
+github.com/wechatpay-apiv3/wechatpay-go/utils/task
 # golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 ## explicit
 golang.org/x/crypto/blowfish

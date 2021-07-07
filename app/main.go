@@ -32,6 +32,7 @@ func main() {
 	log.Println("conf = ", *config.LicenseInfoConf)
 
 	config.InitEnvConf()
+	config.InitGoodsConif()
 	data.InitMysql()
 	data.InitMemoryCache()
 
