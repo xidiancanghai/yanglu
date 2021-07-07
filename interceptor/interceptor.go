@@ -38,6 +38,9 @@ func (ic *Interceptor) ParseToken(ctx *gin.Context) {
 	if config.IsOnline() {
 		secret = def.ApiJwtSecret
 	}
+	if config.IsCloud() {
+		secret = secret + "_cloud"
+	}
 	token := ctx.GetHeader("token")
 	if config.IsLocal() && token == "" {
 		//ctx.Set("uid", 1)

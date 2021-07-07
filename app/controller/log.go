@@ -27,9 +27,8 @@ func (l *Log) List(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
 		return
 	}
-
+	// 解析
 	uid := ctx.GetInt("uid")
-
 	// 先校验权限
 	if !service.NewUserService().HasAuthority(uid, model.AuthorityCheckLog) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限查看日志", errors.New("你没有权限查看日志"))

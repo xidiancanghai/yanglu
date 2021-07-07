@@ -125,3 +125,14 @@ create table user_tmp_passwd (
     `create_time` int NOT NULL DEFAULT '0',
     PRIMARY KEY(`uid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
+
+
+create table order_info  (
+    `id` int not null AUTO_INCREMENT,
+    `uid` int not null DEFAULT '',
+    `money` int not null 
+    `passwd` varchar(16) not null DEFAULT '',
+    `authority` varchar(32) NOT NULL DEFAULT '[]',
+    `create_time` int NOT NULL DEFAULT '0',
+    PRIMARY KEY(`uid`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
