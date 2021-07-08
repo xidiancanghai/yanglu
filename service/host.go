@@ -461,3 +461,22 @@ func (hc *HostInfoService) ListAll() (interface{}, error) {
 func (hs *HostInfoService) SystemOsDistribute(uid int) (interface{}, error) {
 	return model.NewHostInfo().SystemOsDistribute(uid)
 }
+
+func (hs *HostInfoService) Delete(ip string) error {
+	host, err := model.NewHostInfo().GetHostInfoByIp(ip)
+	if err != nil {
+		logrus.Error("Delete err ", err)
+		return err
+	}
+	if host.Id == 0 {
+		return errors.New("")
+	}
+	err = host.Updates(map[string]interface{}{
+		"is_delete": 1,
+	})
+	if err != nil {
+		logrus.Error("Delete err ", err)
+		return err
+	}
+	return nil
+}
