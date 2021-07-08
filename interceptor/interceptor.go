@@ -2,6 +2,7 @@ package interceptor
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 	"yanglu/config"
 	"yanglu/def"
@@ -43,7 +44,17 @@ func (ic *Interceptor) ParseToken(ctx *gin.Context) {
 	}
 	token := ctx.GetHeader("token")
 	if config.IsLocal() && token == "" {
-		//ctx.Set("uid", 1)
+
+		var uid int64 = 0
+		if ctx.Request.Method == "POST" {
+			uids := ctx.PostForm("uid")
+			uid, _ = strconv.ParseInt(uids, 10, 64)
+		} else {
+			uid, _ = strconv.ParseInt(ctx.Query("uid"), 10, 64)
+		}
+		if uid != 0 {
+			ctx.Set("uid", uid)
+		}
 		return
 	}
 	if !config.IsLocal() && len(token) <= 0 {

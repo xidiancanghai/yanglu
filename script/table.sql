@@ -136,3 +136,5 @@ create table order_info  (
     `create_time` int NOT NULL DEFAULT '0',
     PRIMARY KEY(`uid`)
  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
+ 
+alter table host_info add is_delete tinyint not null default 0 after uid;

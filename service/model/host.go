@@ -21,8 +21,9 @@ type HostInfo struct {
 	BusinessName string `json:"business_name"`
 	SystemOs     string `json:"system_os"`
 	Uid          int    `json:"-"`
-	UpdateTime   int64  `json:"-"`
-	CreateTime   int64  `json:"-"`
+	IsDelete     int
+	UpdateTime   int64 `json:"-"`
+	CreateTime   int64 `json:"-"`
 }
 
 func NewHostInfo() *HostInfo {
@@ -91,7 +92,7 @@ func (h *HostInfo) GetHostInfoByIp(ip string) (*HostInfo, error) {
 		return nil, errors.New("参数错误")
 	}
 	rh := new(HostInfo)
-	tx := data.GetDB().Where(" ip = ? ", ip).First(rh)
+	tx := data.GetDB().Where(" ip = ? and is_delete = 0 ", ip).First(rh)
 	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
 		logrus.Error("GetHostInfoById err", tx)
 		return nil, tx.Error
@@ -104,7 +105,7 @@ func (h *HostInfo) GetHostsByNetworkSegment(ip string) ([]*HostInfo, error) {
 		return nil, errors.New("参数错误")
 	}
 	list := []*HostInfo{}
-	sqll := "select * from host_info where ip like '" + ip + "%'"
+	sqll := "select * from host_info where ip like '" + ip + "%' and is_delete = 0 "
 	tx := data.GetDB().Model(h).Raw(sqll, ip).Find(&list)
 	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
 		logrus.Error("GetHostsByNetworkSegment err", tx)
@@ -118,7 +119,7 @@ func (h *HostInfo) GetHostInfoByDepartment(department string) ([]*HostInfo, erro
 		return nil, errors.New("参数错误")
 	}
 	list := []*HostInfo{}
-	tx := data.GetDB().Where(" department = ? ", department).Find(&list)
+	tx := data.GetDB().Where(" department = ? and is_delete = 0", department).Find(&list)
 	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
 		logrus.Error("GetHostInfoById err", tx)
 		return nil, tx.Error
@@ -128,7 +129,7 @@ func (h *HostInfo) GetHostInfoByDepartment(department string) ([]*HostInfo, erro
 
 func (h *HostInfo) ListAll() ([]*HostInfo, error) {
 	list := []*HostInfo{}
-	tx := data.GetDB().Model(h).Find(&list)
+	tx := data.GetDB().Model(h).Where(" is_delete = 0 ").Find(&list)
 	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
 		logrus.Error("GetHostInfoById err", tx)
 		return nil, tx.Error
@@ -138,9 +139,9 @@ func (h *HostInfo) ListAll() ([]*HostInfo, error) {
 
 func (h *HostInfo) SystemOsDistribute(uid int) ([]map[string]interface{}, error) {
 	list := []map[string]interface{}{}
-	sqll := "select system_os, count(*) as num from host_info group by system_os order by num desc"
+	sqll := "select system_os, count(*) as num from host_info where is_delete = 0 group by system_os order by num desc"
 	if config.IsCloud() {
-		sqll = fmt.Sprintf("select system_os, count(*) as num from host_info where uid = %d group by system_os order by num desc", uid)
+		sqll = fmt.Sprintf("select system_os, count(*) as num from host_info where uid = %d and is_delete = 0 group by system_os order by num desc", uid)
 	}
 	rows, err := data.GetDB().Raw(sqll).Rows()
 	if err != nil && err != gorm.ErrRecordNotFound {

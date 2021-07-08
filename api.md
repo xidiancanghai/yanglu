@@ -228,4 +228,12 @@
         "data":{
             "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVaWQiOjMwLCJleHAiOjE2MjUyNzY0NjB9.6esJoJwcIDulSJNUTGl3ScqmwbiAReP8oWcFM_8i2B4"
         }
+### 16 删除主机
+
+    curl -X POST http://127.0.0.1:8090/host/delete -d 'ip=112.125.25.235'
+
+    {   
+        "code":0,
+        "message":"ok",
+        "data":{}
     }
