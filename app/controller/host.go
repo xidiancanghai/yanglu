@@ -199,3 +199,26 @@ func (hc *Host) SystemOsDistribute(ctx *gin.Context) {
 func (hc *Host) SetIp(ctx *gin.Context) {
 
 }
+
+func (hc *Host) Delete(ctx *gin.Context) {
+	params := &struct {
+		Ip string `form:"ip" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
+		return
+	}
+	uid := ctx.GetInt("uid")
+	// 先校验权限
+	if !service.NewUserService().HasAuthority(uid, model.AuthorityAddHost) {
+		helper.ErrRsp(ctx, def.CodeErr, "你没有权限添加主机", errors.New("你没有权限添加主机"))
+		return
+	}
+	err := service.NewHostInfoService().Delete(params.Ip)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{})
+}
