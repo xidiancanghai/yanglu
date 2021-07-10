@@ -52,3 +52,39 @@ func (uc *UtilController) GetSystemInfo(ctx *gin.Context) {
 		"edition":  config.LicenseInfoConf.Edition,
 	})
 }
+
+func (uc *UtilController) UploadImages(ctx *gin.Context) {
+	file, header, err := ctx.Request.FormFile("file")
+	if err != nil {
+		return
+	}
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	fileName, err := service.NewUtilService().UploadImage(file, header.Filename)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{"file_name": fileName})
+}
+
+func (uc *UtilController) DownloadImage(ctx *gin.Context) {
+
+	params := &struct {
+		FileName string `form:"file_name"  binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
+		return
+	}
+
+	err := service.NewUtilService().DownloadImage(params.FileName, ctx)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+}

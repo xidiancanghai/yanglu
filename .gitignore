@@ -7,7 +7,9 @@ config/env.toml
 logs
 log
 app/logsapi
+app/api
 */logs
 *_server_*
 api_server
 tags
+images

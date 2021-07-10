@@ -63,9 +63,10 @@ func (h *HostInfo) BatchCreate(list []*HostInfo) error {
 }
 
 func (h *HostInfo) Updates(m map[string]interface{}) error {
-	if h.Id == 0 {
+	if h.Id == 0 || len(m) == 0 {
 		return errors.New("参数错误")
 	}
+	m["update_time"] = time.Now().Unix()
 	tx := data.GetDB().Model(h).Where(" id = ?", h.Id).Updates(m)
 	if tx.Error != nil {
 		logrus.Error("Updates err", tx)
@@ -162,4 +163,16 @@ func (h *HostInfo) SystemOsDistribute(uid int) ([]map[string]interface{}, error)
 		})
 	}
 	return list, nil
+}
+
+func (h *HostInfo) BatchDelete(ips []string) error {
+
+	sqll := "update " + h.TableName() + " set is_delete = 1, update_time = unix_timestamp(now()) where ip in (?)"
+
+	_, err := data.GetDB().Model(h).Raw(sqll, ips).Rows()
+	if err != nil {
+		logrus.Error("BatchDelete err", err)
+		return err
+	}
+	return nil
 }

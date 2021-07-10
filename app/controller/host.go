@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"strings"
 	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
@@ -202,7 +203,7 @@ func (hc *Host) SetIp(ctx *gin.Context) {
 
 func (hc *Host) Delete(ctx *gin.Context) {
 	params := &struct {
-		Ip string `form:"ip" binding:"required"`
+		Ips string `form:"ip" binding:"required"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
@@ -212,10 +213,13 @@ func (hc *Host) Delete(ctx *gin.Context) {
 	uid := ctx.GetInt("uid")
 	// 先校验权限
 	if !service.NewUserService().HasAuthority(uid, model.AuthorityAddHost) {
-		helper.ErrRsp(ctx, def.CodeErr, "你没有权限添加主机", errors.New("你没有权限添加主机"))
+		helper.ErrRsp(ctx, def.CodeErr, "你没有权限删除主机", errors.New("你没有权限删除主机"))
 		return
 	}
-	err := service.NewHostInfoService().Delete(params.Ip)
+
+	ips := strings.Split(params.Ips, ",")
+
+	err := service.NewHostInfoService().Delete(ips)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return

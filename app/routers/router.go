@@ -19,6 +19,7 @@ func InitRouter() *gin.Engine {
 	config(r)
 	util(r)
 	order(r)
+	article(r)
 	return r
 }
 
@@ -86,6 +87,8 @@ func util(r *gin.Engine) {
 		util.GET("/get_captcha", controller.NewUtilController().GetCaptcha)
 		util.GET("/get_captcha_id", controller.NewUtilController().GetCaptchaId)
 		util.GET("/get_system_info", controller.NewUtilController().GetSystemInfo)
+		util.POST("/upload_images", controller.NewUtilController().UploadImages)
+		util.GET("/download_images", controller.NewUtilController().DownloadImage)
 	}
 }
 
@@ -93,5 +96,14 @@ func order(r *gin.Engine) {
 	order := r.Group("/order")
 	{
 		order.GET("/config", controller.NewOrder().GetConfig)
+	}
+}
+
+func article(r *gin.Engine) {
+	article := r.Group("/article")
+	{
+		article.POST("/add", controller.NewArticleController().Add)
+		article.GET("/list", controller.NewArticleController().List)
+		article.GET("/list_my_article", controller.NewArticleController().ListMyArticle)
 	}
 }

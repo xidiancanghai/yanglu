@@ -237,3 +237,69 @@
         "message":"ok",
         "data":{}
     }
+
+### 17 上传图片
+
+    curl -X POST http://127.0.0.1:8090/util/upload_images
+
+    直接用postman模拟上传即可
+
+    {
+        "code": 0,
+        "message": "ok",
+        "data": {
+            "file_name": "JtP1rBmwvb1625907541015.jpeg"
+        }
+    }
+
+### 18 下载图片
+
+   curl -X POST http://127.0.0.1:8090/util/download_images?file_name=JtP1rBmwvb1625907541015.jpeg
+
+### 19 发表文章
+
+    curl -X POST http://127.0.0.1:8090/article/add -H "Content-Typ:application/json" -d 
+        '{
+        "title":"title",
+        "tag":"tag",
+        "content":"content",
+        "photos":["1","2"]
+    }'
+
+    {
+        "code": 0,
+        "message": "ok",
+        "data": {}
+    }
+
+### 20 列出文章
+    curl -X GET http://127.0.0.1:8090/article/list?last_id=-1&limit=20
+
+    第一次的时候，last_id = -1
+
+    {"code":0,"message":"ok","data":{"list":[{"id":2,"uid":30,"content":{"title":"title","tag":"tag","content":"content","photos":["1","2"]},"create_time":1625919634},{"id":1,"uid":1,"content":{"title":"测试","tag":"你好啊","content":"测试啊","photos":[]},"create_time":1625917938}]}}
+
+### 21 列出我的文章
+    http://127.0.0.1:8090/article/list_my_article?last_id=-1&limit=10
+
+    第一次的时候，last_id = -1
+
+    {
+        "code": 0,
+        "message": "ok",
+        "data": {
+            "list": [
+                {
+                    "id": 1,
+                    "uid": 1,
+                    "content": {
+                        "title": "测试",
+                        "tag": "你好啊",
+                        "content": "测试啊",
+                        "photos": []
+                    },
+                    "create_time": 1625917938
+                }
+            ]
+        }
+    }
