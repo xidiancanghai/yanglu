@@ -138,3 +138,15 @@ create table order_info  (
  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
  
 alter table host_info add is_delete tinyint not null default 0 after uid;
+
+
+create table article_info (
+    `id` int not null AUTO_INCREMENT,
+    `uid` int not null DEFAULT 0,
+    `content` text not null,
+    `is_delete` tinyint not null DEFAULT 0,
+    `update_time` int NOT NULL DEFAULT '0',
+    `create_time` int NOT NULL DEFAULT '0',
+    PRIMARY KEY(`id`),
+    KEY(`uid`)
+)  ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4

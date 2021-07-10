@@ -15,7 +15,6 @@ func InitLogger(logPath string, prefix map[string]interface{}) {
 	if len(logPath) == 0 {
 		logPath = config.GetLogPath()
 	}
-
 	exist, _ := pathExists(logPath)
 	if !exist {
 		err := os.MkdirAll(logPath, os.ModePerm)

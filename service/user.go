@@ -117,7 +117,7 @@ func (us *UserService) HasAuthorityByUser(user *model.User, authority int) bool 
 		return true
 	}
 	for _, v := range user.Authority {
-		if v == authority {
+		if v == authority || v == model.AuthoritySuperAdmin {
 			return true
 		}
 	}
