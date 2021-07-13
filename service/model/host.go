@@ -176,3 +176,14 @@ func (h *HostInfo) BatchDelete(ips []string) error {
 	}
 	return nil
 }
+
+func (h *HostInfo) Delete(ips []string) error {
+
+	tx := data.GetDB().Model(h).Where(" ip in (?) ", ips).Delete(HostInfo{})
+
+	if tx.Error != nil {
+		logrus.Error("Delete err ", tx)
+	}
+
+	return tx.Error
+}

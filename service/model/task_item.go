@@ -79,3 +79,14 @@ func (t *TaskItem) GetTaskProgress(taskId int) (map[int]int, error) {
 	}
 	return res, nil
 }
+
+func (t *TaskItem) Delete(ips []string) error {
+
+	tx := data.GetDB().Model(t).Where(" ip in (?) ", ips).Delete(TaskItem{})
+
+	if tx.Error != nil {
+		logrus.Error("Delete err ", tx)
+	}
+
+	return tx.Error
+}

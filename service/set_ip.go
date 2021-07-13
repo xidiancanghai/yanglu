@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -168,15 +169,20 @@ func (ss *SetIpService) Ubuntu() error {
 		return err
 	}
 
+	address := []string{fmt.Sprintf("%s/24", ss.ip)}
+	addressBytes, _ := json.Marshal(address)
+	nameservers := []string{nameServer}
+	nameserverBytes, _ := json.Marshal(nameservers)
+
 	res := map[string]interface{}{
 		"network": map[string]interface{}{
 			card: map[string]interface{}{
 				"dhcp4":    "no",
-				"address":  []string{fmt.Sprintf("%s/24", ss.ip)},
+				"address":  string(addressBytes),
 				"optional": true,
 				"gateway4": gateway4,
 				"nameservers": map[string]interface{}{
-					"addresses": []string{nameServer},
+					"addresses": string(nameserverBytes),
 				},
 			},
 		},
