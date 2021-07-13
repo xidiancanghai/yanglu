@@ -16,6 +16,7 @@ require (
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052
 	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
 	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
+	github.com/flosch/pongo2 v0.0.0-20200913210552-0d938eb266f3
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9
@@ -37,7 +38,6 @@ require (
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.1
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/mysql v1.0.6

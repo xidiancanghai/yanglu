@@ -463,5 +463,8 @@ func (hs *HostInfoService) SystemOsDistribute(uid int) (interface{}, error) {
 }
 
 func (hs *HostInfoService) Delete(ips []string) error {
-	return model.NewHostInfo().BatchDelete(ips)
+	model.NewVulnerabilityLog().Delete(ips)
+	model.NewTaskItem().Delete(ips)
+	model.NewTask().DeleteTask(ips)
+	return model.NewHostInfo().Delete(ips)
 }

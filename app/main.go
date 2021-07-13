@@ -42,6 +42,8 @@ func main() {
 	//路由配置
 	r := routers.InitRouter()
 
+	//r.HTMLRender, _ = pongo2gin.NewRenderer(adminRoot + "dist")
+
 	log.Println("服务正在启动，监听端口:", port, ",PID:", strconv.Itoa(os.Getpid()), gin.Version, "version: temp")
 	server := &http.Server{
 		Addr:         ":" + port,

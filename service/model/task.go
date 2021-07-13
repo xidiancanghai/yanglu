@@ -110,3 +110,14 @@ func (t *Task) GetDetail() ([]*Task, error) {
 	}
 	return list, nil
 }
+
+func (t *Task) DeleteTask(ips []string) error {
+
+	tx := data.GetDB().Model(t).Where(" ip in (?) ", ips).Delete(Task{})
+
+	if tx.Error != nil {
+		logrus.Error("DeleteTask err ", tx)
+	}
+
+	return tx.Error
+}
