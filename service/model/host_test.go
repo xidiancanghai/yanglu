@@ -36,6 +36,6 @@ func TestGetHostInfoById(t *testing.T) {
 	// init db
 	data.InitMysql()
 
-	host, err := NewHostInfo().GetHostInfoById(1)
-	fmt.Println("err = ", err, " host = ", *host)
+	host, err := NewHostInfo().GetHostsByIps([]string{"112.125.25.235"})
+	fmt.Println("err = ", err, " host = ", host)
 }

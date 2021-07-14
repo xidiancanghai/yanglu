@@ -112,7 +112,6 @@ func (hc *Host) UpdateDepartment(ctx *gin.Context) {
 
 func (hc *Host) SearchHost(ctx *gin.Context) {
 	params := &struct {
-		Type      int    `form:"type"`
 		Condition string `form:"condition" binding:"required"`
 	}{}
 
@@ -121,12 +120,8 @@ func (hc *Host) SearchHost(ctx *gin.Context) {
 		return
 	}
 	uid := ctx.GetInt("uid")
-	searchHost := service.NewSearchHostFactory().CreateSearch(params.Type)
-	if searchHost == nil {
-		helper.ErrRsp(ctx, def.CodeErr, "请求类型错误", nil)
-		return
-	}
-	list, err := searchHost.Search(uid, params.Condition)
+
+	list, err := service.NewSearchHostService(uid, params.Condition).SearchHost()
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return
