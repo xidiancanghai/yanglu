@@ -1,14 +1,29 @@
 package routers
 
 import (
+	"net/http"
 	"yanglu/app/controller"
 	"yanglu/interceptor"
 
+	"github.com/flosch/pongo2"
 	"github.com/gin-gonic/gin"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
+
+	adminRoot := "../"
+	r.StaticFS("/css", http.Dir(adminRoot+"dist/css"))
+	r.StaticFS("/js", http.Dir(adminRoot+"dist/js"))
+	r.StaticFS("/img", http.Dir(adminRoot+"dist/img"))
+	r.StaticFS("/fonts", http.Dir(adminRoot+"dist/fonts"))
+	r.StaticFile("/favicon.ico", adminRoot+"dist/favicon.ico")
+	r.HTMLRender = New(adminRoot)
+
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "../dist/index.html", pongo2.Context{})
+	})
+
 	r.Use(gin.Recovery())
 	r.Use(interceptor.NewInterceptor().LicenseExpired)
 	r.Use()

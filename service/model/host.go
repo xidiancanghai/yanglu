@@ -21,9 +21,9 @@ type HostInfo struct {
 	BusinessName string `json:"business_name"`
 	SystemOs     string `json:"system_os"`
 	Uid          int    `json:"-"`
-	IsDelete     int
-	UpdateTime   int64 `json:"-"`
-	CreateTime   int64 `json:"-"`
+	IsDelete     int    `json:"-"`
+	UpdateTime   int64  `json:"-"`
+	CreateTime   int64  `json:"-"`
 }
 
 func NewHostInfo() *HostInfo {
@@ -108,6 +108,20 @@ func (h *HostInfo) GetHostsByNetworkSegment(ip string) ([]*HostInfo, error) {
 	list := []*HostInfo{}
 	sqll := "select * from host_info where ip like '" + ip + "%' and is_delete = 0 "
 	tx := data.GetDB().Model(h).Raw(sqll, ip).Find(&list)
+	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
+		logrus.Error("GetHostsByNetworkSegment err", tx)
+		return nil, tx.Error
+	}
+	return list, nil
+}
+
+func (h *HostInfo) GetHostsByIps(ips []string) ([]*HostInfo, error) {
+	if len(ips) == 0 {
+		return nil, errors.New("参数错误")
+	}
+	list := []*HostInfo{}
+	sqll := "select * from host_info where ip in (?) and is_delete = 0 "
+	tx := data.GetDB().Model(h).Raw(sqll, ips).Find(&list)
 	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
 		logrus.Error("GetHostsByNetworkSegment err", tx)
 		return nil, tx.Error
