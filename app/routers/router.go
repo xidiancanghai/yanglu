@@ -21,7 +21,7 @@ func InitRouter() *gin.Engine {
 	r.HTMLRender = New(adminRoot)
 
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "../dist/index.html", pongo2.Context{})
+		c.HTML(http.StatusOK, "/dist/index.html", pongo2.Context{})
 	})
 
 	r.Use(gin.Recovery())
