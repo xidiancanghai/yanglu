@@ -211,14 +211,27 @@ func (h *HostInfoService) GetSystemInfo(host *model.HostInfo) (string, error) {
 	defer session.Close()
 	var b bytes.Buffer
 	session.Stdout = &b
-	if err = session.Run("cat /etc/issue"); err != nil {
-		logrus.Error("GetSystemInfo err ", err)
-		return "", err
+
+	cmds := []string{"cat /etc/os-release|grep  PRETTY_NAME", "cat /etc/issue"}
+	sysTemList := []string{"Ubuntu", "CentOS", "RedHat", "Debian", "SUSE"}
+
+	for _, v := range cmds {
+		if err = session.Run(v); err != nil {
+			logrus.Error("GetSystemInfo err ", err)
+			return "", err
+		}
+		res := strings.ReplaceAll(b.String(), " ", "")
+
+		fmt.Println(res)
+
+		for _, sys := range sysTemList {
+			if strings.Contains(strings.ToLower(res), strings.ToLower(sys)) {
+				return sys, nil
+			}
+		}
+
 	}
-	ss := strings.Split(strings.TrimSpace(b.String()), " ")
-	if len(ss) > 0 {
-		return ss[0], nil
-	}
+
 	return "", errors.New("找不到系统信息")
 }
 
