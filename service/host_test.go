@@ -124,6 +124,9 @@ func TestCpFile(t *testing.T) {
 }
 
 func TestCmd(t *testing.T) {
+
+	config.InitLicenseConfig()
+
 	config.InitEnvConf("../config/env.toml")
 
 	// init log
@@ -134,17 +137,25 @@ func TestCmd(t *testing.T) {
 
 	hs := NewHostInfoService()
 
-	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp("112.125.25.235")
+	_, err := hs.Add("47.104.213.134", 22, "testyly", "testyly@123", "测试", "测试")
+	fmt.Println("err = ", err)
+}
 
-	//hs.CpFile(hostInfo, "cmd.sh")
+func TestPrepare(t *testing.T) {
 
-	//res, err := hs.Cmd(hostInfo, "bash /var/cmd.sh")
-	//_, err := hs.Cmd(hostInfo, "cd /var/trivy;tar -xzvf trivy_0.16.0_Linux-64bit.tar.gz")
+	config.InitLicenseConfig()
 
-	res, err := hs.Cmd(hostInfo, "cd /var/trivy; rm -rf results.json;./trivy fs -f json -o results.json /")
+	config.InitEnvConf("../config/env.toml")
 
-	fmt.Println(" res = ", res, " err ", err)
+	// init log
+	logger.InitLogger("", nil)
 
-	res, err = hs.GetResult(hostInfo)
-	fmt.Println(" res = ", res, " err ", err)
+	// init db
+	data.InitMysql()
+
+	hs := NewHostInfoService()
+
+	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp("47.104.213.134")
+
+	hs.Prepare([]*model.HostInfo{hostInfo})
 }

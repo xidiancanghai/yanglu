@@ -19,6 +19,11 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+const (
+	ExecPath = ".matrixyly"
+	DbPath   = ".cache/trivy/db"
+)
+
 type HostInfoService struct {
 	uid int
 }
@@ -241,20 +246,22 @@ func (h *HostInfoService) Prepare(list []*model.HostInfo) error {
 		// 拷贝文件
 		// h.CpFile(list[k], "trivy_dir.sh", "/var")
 		// h.Cmd(list[k], "bash /var/trivy_dir.sh")
-		cmd := `
-		cd /var;path="/var/trivy";if [ ! -d "$path" ];then     mkdir "$path";     echo "ok"; else     echo "file_exists"; fi
-		`
-		h.Cmd(list[k], cmd)
-		h.CpFileBySftp(list[k], "trivy_0.16.0_Linux-64bit.tar.gz", "/var/trivy")
-		h.Cmd(list[k], "cd /var/trivy;tar -xzvf trivy_0.16.0_Linux-64bit.tar.gz")
 
-		cmd = `
-		cd /root/.cache;path="/root/.cache/trivy/db";if [ ! -d "$path" ];then     mkdir -p "$path";     echo "ok"; else     echo "file_exists"; fi
-		`
+		path := h.GetPath(list[k])
 
+		execPath := path + "/" + ExecPath
+		cmd := `path="{0}";if [ ! -d "$path" ];then     mkdir "$path";     echo "ok"; else     echo "file_exists"; fi`
+		cmd = strings.ReplaceAll(cmd, "{0}", execPath)
 		h.Cmd(list[k], cmd)
-		h.CpFileBySftp(list[k], "trivy-offline.db.tgz", "/root/.cache/trivy/db")
-		h.Cmd(list[k], "cd /root/.cache/trivy/db;tar zxvf trivy-offline.db.tgz")
+		h.CpFileBySftp(list[k], "trivy_0.16.0_Linux-64bit.tar.gz", execPath)
+		h.Cmd(list[k], fmt.Sprintf("cd %s;tar -xzvf trivy_0.16.0_Linux-64bit.tar.gz", execPath))
+
+		dbPath := path + "/" + DbPath
+		cmd = `path="{0}";if [ ! -d "$path" ];then     mkdir -p "$path";     echo "ok"; else     echo "file_exists"; fi`
+		cmd = strings.ReplaceAll(cmd, "{0}", dbPath)
+		h.Cmd(list[k], cmd)
+		h.CpFileBySftp(list[k], "trivy-offline.db.tgz", dbPath)
+		h.Cmd(list[k], fmt.Sprintf("cd %s;tar zxvf trivy-offline.db.tgz", dbPath))
 	}
 	return nil
 }
@@ -342,6 +349,14 @@ func (h *HostInfoService) CpFile(host *model.HostInfo, fileName string, filePath
 	return nil
 }
 
+func (h *HostInfoService) GetPath(host *model.HostInfo) string {
+	path := "/root"
+	if host.SshUser != "root" {
+		path = "/home/" + host.SshUser
+	}
+	return path
+}
+
 func (h *HostInfoService) GetResult(host *model.HostInfo) (string, error) {
 
 	client, err := h.GetClient(host)
@@ -355,7 +370,7 @@ func (h *HostInfoService) GetResult(host *model.HostInfo) (string, error) {
 		logrus.Error("GetResult err ", err)
 		return "", err
 	}
-	path := "/var/trivy/results.json"
+	path := fmt.Sprintf("%s/results.json", h.GetPath(host)+"/"+ExecPath)
 	srcFile, err := sftpClient.Open(path)
 	if err != nil {
 		logrus.Error("GetResult err ", err)

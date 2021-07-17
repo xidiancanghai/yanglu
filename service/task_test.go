@@ -1,13 +1,17 @@
 package service
 
 import (
+	"fmt"
 	"testing"
+	"time"
 	"yanglu/config"
 	"yanglu/service/data"
 	"yanglu/service/logger"
 )
 
 func TestStartTask(t *testing.T) {
+
+	config.InitLicenseConfig()
 	config.InitEnvConf("../config/env.toml")
 
 	// init log
@@ -19,5 +23,7 @@ func TestStartTask(t *testing.T) {
 	ts := NewTaskService()
 
 	task, _ := ts.AddFastTask("47.104.213.134")
-	ts.ExecuteTask(task)
+	err := ts.ExecuteTask(task)
+	fmt.Println("err = ", err)
+	time.Sleep(120 * time.Second)
 }

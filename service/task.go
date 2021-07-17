@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -111,7 +112,7 @@ func (ts *TaskService) ExecuteTask(task *model.Task) error {
 	if task.Ip == "" {
 		return errors.New("ip错误")
 	}
-	hostList, err := ts.GetHostInfoByIp(task.Ip)
+	hostList, _ := ts.GetHostInfoByIp(task.Ip)
 	if len(hostList) == 0 {
 		return errors.New("找不到机器")
 	}
@@ -128,7 +129,7 @@ func (ts *TaskService) ExecuteTask(task *model.Task) error {
 		}
 	}
 
-	err = model.NewTaskItem().BatchCreate(taskItems)
+	err := model.NewTaskItem().BatchCreate(taskItems)
 	if err != nil {
 		logrus.Error("Execute err ", err)
 	}
@@ -142,29 +143,28 @@ func (ts *TaskService) ExecuteTask(task *model.Task) error {
 		logrus.Error("Execute err ", err)
 		return err
 	}
-
 	var wg sync.WaitGroup
-	go func() {
-		for k, v := range taskItems {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				err := ts.StartTask(taskItems[k])
-				if err != nil {
-					logrus.Error("Execute err ", err)
-				}
-			}()
-			// 正在进行中
-			v.Status = 1
-			err = v.Updates(map[string]interface{}{
-				"status": 1,
-			})
+
+	for k, v := range taskItems {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			err := ts.StartTask(taskItems[k])
 			if err != nil {
 				logrus.Error("Execute err ", err)
-				continue
 			}
+		}()
+		// 正在进行中
+		v.Status = 1
+		err = v.Updates(map[string]interface{}{
+			"status": 1,
+		})
+		if err != nil {
+			logrus.Error("Execute err ", err)
+			continue
 		}
-	}()
+	}
+
 	wg.Wait()
 
 	err = task.Updates(map[string]interface{}{
@@ -180,22 +180,24 @@ func (ts *TaskService) ExecuteTask(task *model.Task) error {
 }
 
 func (ts *TaskService) EnvironmentOk(hostInfo *model.HostInfo) (bool, error) {
+
 	hostService := NewHostInfoService()
+
+	path := NewHostInfoService().GetPath(hostInfo)
 	// 先检测文件是否都存在
 	cmds := []string{
-		`
-	cd /var/trivy;file="/var/trivy/trivy";if [ ! -f "$file" ];then  echo 1; else  echo 0; fi
-	`,
-		`
-	cd /var/trivy;file="/root/.cache/trivy/db/metadata.json";if [ ! -f "$file" ];then  echo 1; else  echo 0; fi
-	`,
-		`
-	cd /var/trivy;file="/root/.cache/trivy/db/trivy.db";if [ ! -f "$file" ];then  echo 1; else  echo 0; fi
-	`,
+		fmt.Sprintf(`cd {0};file="{0}/%s/trivy";if [ ! -f "$file" ];then  echo 1; else  echo 0; fi`, ExecPath),
+		fmt.Sprintf(`file="{0}/%s/metadata.json";if [ ! -f "$file" ];then  echo 1; else  echo 0; fi`, DbPath),
+		fmt.Sprintf(`file="{0}/%s/trivy.db";if [ ! -f "$file" ];then  echo 1; else  echo 0; fi`, DbPath),
 	}
-
 	for _, cmd := range cmds {
+		cmd = strings.ReplaceAll(cmd, "{0}", path)
 		res, err := hostService.Cmd(hostInfo, cmd)
+		logrus.WithFields(logrus.Fields{
+			"cmd": cmd,
+			"res": res,
+			"err": err,
+		}).Info("EnvironmentOk")
 		if err != nil {
 			logrus.Error("StartTask err ", err)
 			return false, err
@@ -209,8 +211,8 @@ func (ts *TaskService) EnvironmentOk(hostInfo *model.HostInfo) (bool, error) {
 }
 
 func (ts *TaskService) StartTask(taskItem *model.TaskItem) error {
-	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp(taskItem.Ip)
 
+	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp(taskItem.Ip)
 	ok, err := ts.EnvironmentOk(hostInfo)
 
 	if err != nil {
@@ -242,9 +244,12 @@ func (ts *TaskService) StartTask(taskItem *model.TaskItem) error {
 		}
 	}
 
-	cmd := `
-	cd /var/trivy; rm -rf results.json;./trivy fs --skip-update -f json -o results.json /
-	`
+	path := NewHostInfoService().GetPath(hostInfo)
+
+	cmd := fmt.Sprintf(`cd {0}/%s; rm -rf results.json;./trivy fs --skip-update -f json -o results.json /`, ExecPath)
+	cmd = strings.ReplaceAll(cmd, "{0}", path)
+
+	logrus.Info("cmd = ", cmd)
 
 	_, err = hostService.Cmd(hostInfo, cmd)
 
