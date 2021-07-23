@@ -1,0 +1,14 @@
+
+	network:
+    	ethernets:
+        	ens33:
+            	dhcp4: no
+            	addresses: [192.168.1.126/24/24]
+            	optional: true
+            	gateway4: 127.0.0.1
+            	nameservers:
+                    addresses: [198.18.0.2
+]
+ 
+    version: 2
+	

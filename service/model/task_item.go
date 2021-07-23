@@ -80,6 +80,16 @@ func (t *TaskItem) GetTaskProgress(taskId int) (map[int]int, error) {
 	return res, nil
 }
 
+func (t *TaskItem) GetItem(taskId int) (*TaskItem, error) {
+	res := new(TaskItem)
+	tx := data.GetDB().Where("task_id = ? order by id desc limit 1", taskId).First(res)
+	if tx.Error != nil {
+		logrus.Error("GetItem err ", tx.Error)
+		return nil, tx.Error
+	}
+	return res, nil
+}
+
 func (t *TaskItem) Delete(ips []string) error {
 
 	tx := data.GetDB().Model(t).Where(" ip in (?) ", ips).Delete(TaskItem{})

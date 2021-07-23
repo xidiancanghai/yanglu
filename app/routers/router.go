@@ -115,7 +115,7 @@ func order(r *gin.Engine) {
 }
 
 func article(r *gin.Engine) {
-	article := r.Group("/article")
+	article := r.Group("/article", interceptor.NewInterceptor().ParseToken)
 	{
 		article.POST("/add", controller.NewArticleController().Add)
 		article.GET("/list", controller.NewArticleController().List)

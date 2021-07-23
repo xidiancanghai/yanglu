@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -152,7 +151,7 @@ func (ss *SetIpService) Ubuntu() error {
 			break
 		}
 	}
-
+	effectiveFile = "/Users/weipai-liuxiang/go/src/yanglu/service/50-cloud-init.yaml"
 	if card == "" {
 		logrus.Error("Ubuntu err ", err)
 		return errors.New("找不到网卡信息")
@@ -169,28 +168,41 @@ func (ss *SetIpService) Ubuntu() error {
 		return err
 	}
 
-	address := []string{fmt.Sprintf("%s/24", ss.ip)}
-	addressBytes, _ := json.Marshal(address)
-	nameservers := []string{nameServer}
-	nameserverBytes, _ := json.Marshal(nameservers)
+	address := fmt.Sprintf("%s/24", ss.ip)
 
-	res := map[string]interface{}{
-		"network": map[string]interface{}{
-			card: map[string]interface{}{
-				"dhcp4":    "no",
-				"address":  string(addressBytes),
-				"optional": true,
-				"gateway4": gateway4,
-				"nameservers": map[string]interface{}{
-					"addresses": string(nameserverBytes),
-				},
-			},
-		},
-		"version": version,
-	}
+	// res := map[string]interface{}{
+	// 	"network": map[string]interface{}{
+	// 		card: map[string]interface{}{
+	// 			"dhcp4":    "no",
+	// 			"address":  string(addressBytes),
+	// 			"optional": true,
+	// 			"gateway4": gateway4,
+	// 			"nameservers": map[string]interface{}{
+	// 				"addresses": string(nameserverBytes),
+	// 			},
+	// 		},
+	// 	},
+	// 	"version": version,
+	// }
 
-	t, _ := yaml.Marshal(res)
-	err = ioutil.WriteFile(effectiveFile, t, 0777)
+	res := `
+network:
+    ethernets:
+        ens33:
+        	dhcp4: no
+            	addresses: [{0}/24]
+            	optional: true
+            	gateway4: {1}
+            	nameservers:
+                    addresses: [{2}]
+ 
+    version: {3}
+	`
+	res = strings.ReplaceAll(res, "{0}", address)
+	res = strings.ReplaceAll(res, "{1}", gateway4)
+	res = strings.ReplaceAll(res, "{2}", nameServer)
+	res = strings.ReplaceAll(res, "{3}", strconv.Itoa(version))
+	err = ioutil.WriteFile(effectiveFile, []byte(res), 0777)
 	if err != nil {
 		logrus.Error("Ubuntu err ", err)
 		return err
