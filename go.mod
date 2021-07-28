@@ -29,11 +29,11 @@ require (
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/sftp v1.13.1
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.8.1
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/ugorji/go v1.2.4 // indirect
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.1
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
