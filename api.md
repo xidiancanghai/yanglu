@@ -280,7 +280,7 @@
     {"code":0,"message":"ok","data":{"list":[{"id":2,"uid":30,"content":{"title":"title","tag":"tag","content":"content","photos":["1","2"]},"create_time":1625919634},{"id":1,"uid":1,"content":{"title":"测试","tag":"你好啊","content":"测试啊","photos":[]},"create_time":1625917938}]}}
 
 ### 21 列出我的文章
-    http://127.0.0.1:8090/article/list_my_article?last_id=-1&limit=10
+    curl -X GET http://127.0.0.1:8090/article/list_my_article?last_id=-1&limit=10
 
     第一次的时候，last_id = -1
 
@@ -303,3 +303,19 @@
             ]
         }
     }
+
+
+### 22 删除文章
+    curl -X POST http://127.0.0.1:8090/article/delete -d 'id=2'
+
+### 23 获取文章
+     curl -X GET http://127.0.0.1:8090/article/get_detail?id=3
+
+### 25 删除用户
+    curl -X POST http://127.0.0.1:8090/user/delete_user -d 'target_name=1234'
+
+### 26 创建订单
+     curl -X POST http://127.0.0.1:8090/order/create -d 'uid=30&node_num=12&month_num=12'
+
+     返回一个二维码
+

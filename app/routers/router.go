@@ -111,6 +111,7 @@ func order(r *gin.Engine) {
 	order := r.Group("/order")
 	{
 		order.GET("/config", controller.NewOrder().GetConfig)
+		order.POST("/create", controller.NewOrder().Create)
 	}
 }
 
@@ -120,5 +121,7 @@ func article(r *gin.Engine) {
 		article.POST("/add", controller.NewArticleController().Add)
 		article.GET("/list", controller.NewArticleController().List)
 		article.GET("/list_my_article", controller.NewArticleController().ListMyArticle)
+		article.POST("/delete", controller.NewArticleController().Delete)
+		article.GET("/get_detail", controller.NewArticleController().GetDetail)
 	}
 }

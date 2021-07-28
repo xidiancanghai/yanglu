@@ -40,6 +40,48 @@ func (ac *ArticleController) Add(ctx *gin.Context) {
 
 }
 
+func (ac *ArticleController) Delete(ctx *gin.Context) {
+	params := &struct {
+		Id int `form:"id" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
+		return
+	}
+	uid := ctx.GetInt("uid")
+	as := service.NewArticleService(uid)
+
+	err := as.Delete(params.Id)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{})
+}
+
+func (ac *ArticleController) GetDetail(ctx *gin.Context) {
+	params := &struct {
+		Id int `form:"id" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
+		return
+	}
+	uid := ctx.GetInt("uid")
+	as := service.NewArticleService(uid)
+
+	article, err := as.GetDetail(params.Id)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	helper.OKRsp(ctx, gin.H{
+		"article": article,
+	})
+}
+
 func (ac *ArticleController) List(ctx *gin.Context) {
 	params := &struct {
 		LastId int `form:"last_id" binding:"required"`

@@ -10,6 +10,7 @@ import (
 	"yanglu/service/data"
 
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type ArticleContent struct {
@@ -58,6 +59,35 @@ func (a *ArticleInfo) Create() error {
 		logrus.Error("Create err ", tx)
 	}
 	return tx.Error
+}
+
+func (a *ArticleInfo) GetArticle(id int) (*ArticleInfo, error) {
+
+	if id == 0 {
+		return nil, errors.New("id错误")
+	}
+	res := new(ArticleInfo)
+	tx := data.GetDB().Where(" id = ? and is_delete = 0", id).First(res)
+	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
+		logrus.Error("GetArticle err tx = ", tx.Error)
+		return nil, tx.Error
+	}
+	return res, nil
+}
+
+func (a *ArticleInfo) Updates(m map[string]interface{}) error {
+	if len(m) == 0 {
+		return errors.New("参数错误")
+	}
+	if a.Id == 0 {
+		return errors.New("主键id错误")
+	}
+	tx := data.GetDB().Model(a).Updates(m)
+	if tx.Error != nil {
+		logrus.Error("Updates err ", tx)
+		return tx.Error
+	}
+	return nil
 }
 
 func (a *ArticleInfo) List(lastId int, limit int) ([]*ArticleInfo, error) {

@@ -8,6 +8,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -106,79 +107,30 @@ func (ws *WxPayService) InitClient() error {
 	return nil
 }
 
-func (ws *WxPayService) PrePay1() error {
-	// request := struct {
-	// 	AppId          string `xml:"appid"`
-	// 	Attach         string `xml:"attach"`
-	// 	Body           string `xml:"body"`
-	// 	MchId          string `xml:"mch_id"`
-	// 	NonceStr       string `xml:"nonce_str"`
-	// 	NotifyUrl      string `xml:"notify_url"`
-	// 	Openid         string `xml:"openid"`
-	// 	OuTradeNo      string `xml:"out_trade_no"`
-	// 	SpbillCreateIp string `xml:"spbill_create_ip"`
-	// 	TotalFee       int    `xml:"total_fee"`
-	// 	TradeType      string `xml:"trade_type"`
-	// 	SceneInfo      struct {
-	// 		H5Info struct {
-	// 			Type        string `xml:"type"`
-	// 			AppName     string `xml:"app_name"`
-	// 			PackageName string `xml:"package_name"`
-	// 		} `xml:"h5_info"`
-	// 	} `xml:"scene_info"`
-	// }{}
-	// request.AppId = AppId
-	// request.Attach = "测试"
-	// request.Body = "h5支付测试"
-	// request.MchId = MchId
-	// request.NonceStr = helper.GetRandomStr(32)
-	// request.NotifyUrl = ""
+func (ws *WxPayService) PrePay1(total int, outTradeNo string) (string, error) {
 
-	// sceneInfo := map[string]interface{}{
-	// 	"h5_info": map[string]interface{}{
-	// 		"type":     "Wap",
-	// 		"wap_url":  "http://matrix.ylysec.com:8080",
-	// 		"wap_name": "引力云",
-	// 	},
-	// }
-	// sceneInfoBytes, _ := json.Marshal(sceneInfo)
+	m := map[string]interface{}{
+		"amount": map[string]interface{}{
+			"currency": "CNY",
+			"total":    total,
+		},
+		"appid":        AppId,
+		"attach":       "自定义数据说明",
+		"description":  "引力云测试",
+		"mchid":        MchId,
+		"notify_url":   "http://matrix.ylysec.com:8080/order/wx_pay_notify",
+		"out_trade_no": outTradeNo,
+	}
 
-	// m := map[string]string{
-	// 	"appid":            AppId,
-	// 	"mch_id":           MchId,
-	// 	"nonce_str":        helper.GetRandomStr(20),
-	// 	"body":             "h5测试",
-	// 	"out_trade_no":     helper.GetRandomStr(32),
-	// 	"total_fee":        "1",
-	// 	"spbill_create_ip": "127.0.0.1",
-	// 	"notify_url":       "http://matrix.ylysec.com:8080/order/wx_pay_notify",
-	// 	"trade_type":       "MWEB",
-	// 	"scene_info":       string(sceneInfoBytes),
-	// }
-
-	// m := map[string]interface{}{
-	// 	"appid":        AppId,
-	// 	"mch_id":       MchId,
-	// 	"desc":         "引力云测试",
-	// 	"out_trade_no": helper.GetRandomStr(20),
-	// 	"notify_url":   "http://matrix.ylysec.com:8080/order/wx_pay_notify",
-	// 	"amount": map[string]interface{}{
-	// 		"total":    1,
-	// 		"currency": "CNY",
-	// 	},
-	// }
-
-	// m = map[string]interface{}{}
-
-	js := "{\"amount\":{\"currency\":\"CNY\",\"total\":1},\"appid\":\"wxf6e86951473e2d1b\",\"attach\":\"自定义数据说明\",\"description\":\"引力云测试\",\"mchid\":\"1611260465\",\"notify_url\":\"http://matrix.ylysec.com:8080/order/wx_pay_notify\",\"out_trade_no\":\"123456789\"}"
+	js, _ := json.Marshal(m)
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("POST", UrlNative, bytes.NewBuffer([]byte(js)))
+	req, err := http.NewRequest("POST", UrlNative, bytes.NewBuffer(js))
 
 	if err != nil {
 		logrus.Error("pre_pay err = ", err)
-		return err
+		return "", err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -197,7 +149,7 @@ func (ws *WxPayService) PrePay1() error {
 
 	if err != nil {
 		logrus.Error("pre_pay err = ", err)
-		return err
+		return "", err
 	}
 
 	defer rsp.Body.Close()
@@ -207,10 +159,20 @@ func (ws *WxPayService) PrePay1() error {
 	logrus.Info("data = ", string(data), " err = ", err)
 	if err != nil {
 		logrus.Error("pre_pay err = ", err)
-		return err
+		return "", err
 	}
 
-	return nil
+	ss := struct {
+		CodeUrl string `json:"code_url"`
+	}{}
+
+	err = json.Unmarshal(data, &ss)
+
+	if err != nil {
+		return "", err
+	}
+
+	return ss.CodeUrl, nil
 }
 
 func (ws *WxPayService) Sign(method string, url string, nonceStr string, t int64, body string) (string, error) {
@@ -261,7 +223,7 @@ func (ws *WxPayService) PrePay() {
 			Appid:       core.String(AppId),
 			Mchid:       core.String(MchId),
 			Description: core.String("引力云测试"),
-			OutTradeNo:  core.String("123456789"),
+			OutTradeNo:  core.String("12345678910"),
 			//TimeExpire:  core.Time(time.Now()),
 			Attach:    core.String("自定义数据说明"),
 			NotifyUrl: core.String("http://matrix.ylysec.com:8080/order/wx_pay_notify"),

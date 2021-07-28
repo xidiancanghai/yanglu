@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -324,6 +325,11 @@ func (ts *TaskService) GetProgress(taskId int) (interface{}, error) {
 		} else if k == 2 {
 			res["finished"] = v
 		}
+	}
+	// 给一个进度条
+	if _, ok := res["checking"]; ok {
+		taskItem, _ := model.NewTaskItem().GetItem(taskId)
+		res["progress_bar"], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64((time.Now().Unix()-taskItem.UpdateTime)*100.0/5)), 64)
 	}
 	res["all"] = all
 	return res, nil

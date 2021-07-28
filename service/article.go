@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"yanglu/service/model"
 
 	"github.com/sirupsen/logrus"
@@ -29,6 +30,37 @@ func (as *ArticleService) Add(title string, tag string, content string, photos [
 		logrus.Error("Add err = ", err)
 	}
 	return err
+}
+
+func (as *ArticleService) Delete(id int) error {
+	article, err := as.article.GetArticle(id)
+	if err != nil {
+		return err
+	}
+	if article.Id == 0 {
+		return nil
+	}
+	if article.Uid != as.uid {
+		return errors.New("你不是该文章作者")
+	}
+	err = article.Updates(map[string]interface{}{
+		"is_delete": 1,
+	})
+	if err != nil {
+		logrus.Error("Delete err ", err)
+	}
+	return err
+}
+
+func (as *ArticleService) GetDetail(id int) (*model.ArticleInfo, error) {
+	article, err := as.article.GetArticle(id)
+	if err != nil {
+		return nil, err
+	}
+	if article.Id == 0 {
+		return nil, errors.New("文章不存在或者已删除")
+	}
+	return article, err
 }
 
 func (as *ArticleService) List(lastId int, limit int) ([]*model.ArticleInfo, error) {

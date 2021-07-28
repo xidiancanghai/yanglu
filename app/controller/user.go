@@ -209,6 +209,10 @@ func (u *User) DeleteUser(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限设置他人权限", errors.New("你没有权限设置他人权限"))
 		return
 	}
+	if user.Name == params.TargetName {
+		helper.ErrRsp(ctx, def.CodeErr, "自己不能删除自己", errors.New("自己不能删除自己"))
+		return
+	}
 
 	err = service.NewUserService().DeleteUser(params.TargetName)
 	if err != nil {
