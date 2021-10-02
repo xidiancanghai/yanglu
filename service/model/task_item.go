@@ -82,7 +82,7 @@ func (t *TaskItem) GetTaskProgress(taskId int) (map[int]int, error) {
 
 func (t *TaskItem) GetItem(taskId int) (*TaskItem, error) {
 	res := new(TaskItem)
-	tx := data.GetDB().Where("task_id = ? order by id desc limit 1", taskId).First(res)
+	tx := data.GetDB().Where("task_id = ? order by id desc ", taskId).Take(res)
 	if tx.Error != nil {
 		logrus.Error("GetItem err ", tx.Error)
 		return nil, tx.Error
