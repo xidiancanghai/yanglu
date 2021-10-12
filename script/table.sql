@@ -150,3 +150,16 @@ create table article_info (
     PRIMARY KEY(`id`),
     KEY(`uid`)
 )  ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4
+
+CREATE TABLE `action_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uid` int NOT NULL DEFAULT '0',
+  `type` tinyint NOT NULL DEFAULT '0',
+  `ip` char(32) NOT NULL DEFAULT '',
+  `detail` varchar(128) NOT NULL DEFAULT '0',
+  `create_time` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `type` (`type`),
+  KEY `ip` (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4

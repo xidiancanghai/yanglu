@@ -319,3 +319,31 @@
 
      返回一个二维码
 
+### 27 设置用户权限
+    curl -X POST http://127.0.0.1:8090/user/set_authority -d 'target_name=1234&authority=3'
+
+### 28 搜寻日志
+    curl - X GET 'http://127.0.0.1:8090/log/search_log?start_time=12&end_time=34&type=2&ip=127.0.0.1'
+
+    type 1 登陆 2 添加主机 3 添加任务 4 添加用户
+
+    {
+        "code":0,
+        "message":"ok",
+        "data":{
+            "list":[
+                {
+                    "id":18,
+                    "uid":30,
+                    "detail":"secadmin用户添加了主机47.104.213.134",
+                    "create_time":1624672685
+                },
+                {
+                    "id":17,
+                    "uid":30,
+                    "detail":"secadmin用户登陆",
+                    "create_time":1624672596
+                }
+            ]
+        }
+    }

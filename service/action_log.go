@@ -36,42 +36,49 @@ func NewActionLogService(uid int) *ActionLogService {
 
 func (as *ActionLogService) AddUser(newU *model.User) {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeAddUser
 	as.actionLog.Detail = fmt.Sprintf("%s添加了用户%s", as.name, newU.Name)
 	as.actionLog.Create()
 }
 
 func (as *ActionLogService) Login() {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeLogin
 	as.actionLog.Detail = fmt.Sprintf("%s用户登陆", as.name)
 	as.actionLog.Create()
 }
 
 func (as *ActionLogService) AddHost(host *model.HostInfo) {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeAddHost
 	as.actionLog.Detail = fmt.Sprintf("%s用户添加了主机%s", as.name, host.Ip)
 	as.actionLog.Create()
 }
 
 func (as *ActionLogService) BatchAddHost() {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeAddHost
 	as.actionLog.Detail = fmt.Sprintf("%s用户批量添加了主机", as.name)
 	as.actionLog.Create()
 }
 
 func (as *ActionLogService) AddFastTask(task *model.Task) {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeAddTask
 	as.actionLog.Detail = fmt.Sprintf("%s用户添加了安检任务%s", as.name, task.Ip)
 	as.actionLog.Create()
 }
 
 func (as *ActionLogService) AddTimedTask(task *model.Task) {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeAddTask
 	as.actionLog.Detail = fmt.Sprintf("%s用户添加了定时安检任务%s", as.name, task.Ip)
 	as.actionLog.Create()
 }
 
 func (as *ActionLogService) AddRepeatedTask(task *model.Task) {
 	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeAddTask
 	as.actionLog.Detail = fmt.Sprintf("%s用户添加了重复安检任务%s", as.name, task.Ip)
 	as.actionLog.Create()
 }
@@ -81,6 +88,10 @@ func (as *ActionLogService) List(lastId int) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	return as.buildRsp(list)
+}
+
+func (s *ActionLogService) buildRsp(list []*model.ActionLog) (interface{}, error) {
 	if len(list) == 0 {
 		return list, nil
 	}
@@ -107,4 +118,13 @@ func (as *ActionLogService) List(lastId int) (interface{}, error) {
 	}
 
 	return res, nil
+}
+
+func (s *ActionLogService) SearchLog(startTime int, endTime int, action int, ip string) (interface{}, error) {
+
+	list, err := model.NewActionLog().SearchLog(startTime, endTime, action, ip)
+	if err != nil {
+		return nil, err
+	}
+	return s.buildRsp(list)
 }

@@ -92,6 +92,7 @@ func actionLog(r *gin.Engine) {
 	log := r.Group("/log")
 	{
 		log.GET("/list", interceptor.NewInterceptor().ParseToken, controller.NewLog().List)
+		log.GET("/search_log", interceptor.NewInterceptor().ParseToken, controller.NewLog().SearchLog)
 	}
 
 }
