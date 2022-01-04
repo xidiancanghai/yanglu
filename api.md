@@ -320,7 +320,7 @@
      返回一个二维码
 
 ### 27 设置用户权限
-    curl -X POST http://127.0.0.1:8090/user/set_authority -d 'target_name=1234&authority=3'
+    curl -X POST http://127.0.0.1:8090/user/set_authority -d 'target_name=1234&authority=3&authority=4'
 
 ### 28 搜寻日志
     curl - X GET 'http://127.0.0.1:8090/log/search_log?start_time=12&end_time=34&type=2&ip=127.0.0.1'
@@ -347,3 +347,6 @@
             ]
         }
     }
+
+### 29 退出登录
+    curl -X POST 'http://127.0.0.1:8090/user/logout'

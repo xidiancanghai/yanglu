@@ -16,6 +16,7 @@ const (
 	ActionTypeAddHost = 2
 	ActionTypeAddTask = 3
 	ActionTypeAddUser = 4
+	ActionTypeLogout  = 5
 )
 
 type ActionLog struct {
@@ -96,6 +97,10 @@ func (a *ActionLog) SearchLog(startTime int, endTime int, action int, ip string)
 	}
 
 	sqll := "select * from " + a.TableName() + where + " order by id desc limit 100 "
+
+	if config.IsTest() {
+		logrus.Info("sqll = ", sqll)
+	}
 
 	list := []*ActionLog{}
 	tx := data.GetDB().Model(a).Raw(sqll).Find(&list)

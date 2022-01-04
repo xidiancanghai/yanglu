@@ -48,6 +48,13 @@ func (as *ActionLogService) Login() {
 	as.actionLog.Create()
 }
 
+func (as *ActionLogService) Logout() {
+	as.actionLog.Uid = as.uid
+	as.actionLog.Type = model.ActionTypeLogout
+	as.actionLog.Detail = fmt.Sprintf("%s用户退出登录", as.name)
+	as.actionLog.Create()
+}
+
 func (as *ActionLogService) AddHost(host *model.HostInfo) {
 	as.actionLog.Uid = as.uid
 	as.actionLog.Type = model.ActionTypeAddHost

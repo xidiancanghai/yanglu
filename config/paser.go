@@ -41,8 +41,8 @@ type Email struct {
 
 type Config struct {
 	Environment struct {
-		Env    EnvType `toml:"env"`
-		LogDir string  `toml:"logDir"`
+		Env     EnvType `toml:"env"`
+		LogPath string  `toml:"log_path"`
 	} `toml:"environment"`
 	Mysql struct {
 		Soft struct {
@@ -93,7 +93,6 @@ func InitEnvConf(file ...string) {
 	if _, err := toml.DecodeFile(configPath, &conf); err != nil {
 		log.Fatalf("failed to decode file, path: %v, err: %v", configPath, err)
 	}
-
 	if GetEnv() == EnvUnKnown {
 		log.Fatalf("invalied env type: %v", GetEnv())
 	}
@@ -127,7 +126,7 @@ func GetEnv() EnvType {
 }
 
 func GetLogPath() string {
-	return conf.Environment.LogDir
+	return conf.Environment.LogPath
 }
 
 func GetMysqlApi() string {

@@ -156,6 +156,40 @@ func (hc *Host) GetVulnerabilityInfo(ctx *gin.Context) {
 	})
 }
 
+func (hc *Host) GetVulnerabilityPdf(ctx *gin.Context) {
+	params := &struct {
+		Ip string `form:"ip" binding:"required"`
+	}{}
+
+	if err := ctx.ShouldBind(params); err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, "参数不正确", err)
+		return
+	}
+	uid := ctx.GetInt("uid")
+	vs, err := service.NewVulnerabilityService(uid, params.Ip)
+	if err != nil {
+		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+		return
+	}
+	list, _ := vs.GetGetVulnerabilityInfo()
+	if len(list) != 0 {
+		buf, err := service.NewUtilService().BuildPdf(list)
+		if err != nil {
+			helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+			return
+		}
+		ctx.Writer.Header().Add("Content-Type", "application/pdf")
+
+		ctx.Writer.Write(buf)
+
+		if err != nil {
+			helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+			return
+		}
+	}
+	helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
+}
+
 func (hc *Host) ListAll(ctx *gin.Context) {
 	uid := ctx.GetInt("uid")
 	list, err := service.NewHostInfoServiceWithUid(uid).ListAll()

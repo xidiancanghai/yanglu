@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"sort"
 	"yanglu/config"
 	"yanglu/service/model"
 
@@ -85,7 +86,7 @@ func (us *UserService) UserInfo(uid int) (*model.User, error) {
 	return u, nil
 }
 
-func (us *UserService) SetAuthority(name string, authority int) error {
+func (us *UserService) SetAuthority(name string, authority []int) error {
 	user, err := model.NewUser().GetUserByName(name)
 	if err != nil {
 		return err
@@ -93,9 +94,20 @@ func (us *UserService) SetAuthority(name string, authority int) error {
 	if user.Uid == 0 {
 		return errors.New("该用户不存在")
 	}
-	user.Authority = append(user.Authority, authority)
+	user.Authority = append(user.Authority, authority...)
+	// 去重复
+	sort.Ints(user.Authority)
+	ret := []int{}
+	for i := 0; i < len(user.Authority); {
+		ret = append(ret, user.Authority[i])
+		j := i
+		for j < len(user.Authority) && user.Authority[i] == user.Authority[j] {
+			j++
+		}
+		i = j
+	}
 	err = user.Updates(map[string]interface{}{
-		"authority": user.Authority,
+		"authority": model.Ints(ret),
 	})
 	if err != nil {
 		logrus.Error("SetAuthority err ", err)

@@ -97,10 +97,12 @@ func TestUpdateSystemInfo(t *testing.T) {
 
 	hs := NewHostInfoService()
 
-	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp("112.125.25.235")
+	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp("47.104.213.134")
 
 	err := hs.Prepare([]*model.HostInfo{hostInfo})
 	fmt.Println("err = ", err)
+
+	//fmt.Println(hs.CheckDir(hostInfo, "/home/ftp1"))
 }
 
 func TestCpFile(t *testing.T) {
@@ -158,4 +160,25 @@ func TestPrepare(t *testing.T) {
 	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp("47.104.213.134")
 
 	hs.Prepare([]*model.HostInfo{hostInfo})
+}
+
+func TestGetHostName(t *testing.T) {
+
+	config.InitLicenseConfig()
+
+	config.InitEnvConf("../config/env.toml")
+
+	// init log
+	logger.InitLogger("", nil)
+
+	// init db
+	data.InitMysql()
+
+	hs := NewHostInfoService()
+
+	hostInfo, _ := model.NewHostInfo().GetHostInfoByIp("47.104.213.134")
+	fmt.Println(hs.GetHostName(hostInfo))
+
+	hostInfo1, _ := model.NewHostInfo().GetHostInfoByIp("112.125.25.235")
+	fmt.Println(hs.GetHostName(hostInfo1))
 }

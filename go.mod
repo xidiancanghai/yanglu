@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/BurntSushi/toml v0.3.1
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.7.2
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
 	github.com/dchest/captcha v0.0.0-20200903113550-03f5f0333e1f
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -23,8 +24,6 @@ require (
 	github.com/golang/protobuf v1.5.1 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
-	github.com/kr/pretty v0.2.1 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -39,7 +38,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/mysql v1.0.6
 	gorm.io/gorm v1.21.9
 )

@@ -76,10 +76,28 @@ func (hs *HostInfoService) Add(ip string, port int, sshUser string, sshPasswd st
 		logrus.Error("Add err ", err)
 		return nil, err
 	}
+
 	go func() {
 		hs.Prepare([]*model.HostInfo{hsDao})
 	}()
+
 	return hsDao, nil
+}
+
+func (hs *HostInfoService) GetHostName(host *model.HostInfo) error {
+	cmd := "hostname"
+	hostname, err := hs.Cmd(host, cmd)
+	if err != nil {
+		logrus.Error("GetHostName err = ", err)
+		return err
+	}
+	if hostname != "" {
+		hostname = strings.TrimSpace(hostname)
+		return host.Updates(map[string]interface{}{
+			"hostname": hostname,
+		})
+	}
+	return nil
 }
 
 func (hs *HostInfoService) BatchAdd(list []*model.HostInfo) error {
@@ -120,6 +138,14 @@ func (hs *HostInfoService) CheckPass(host *model.HostInfo) error {
 		return errors.New("请检查账号密码")
 	}
 	defer client.Close()
+
+	path := hs.GetPath(host)
+	execPath := path + "/" + ExecPath
+
+	if err := hs.CheckDir(host, execPath); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -222,14 +248,11 @@ func (h *HostInfoService) GetSystemInfo(host *model.HostInfo) (string, error) {
 		}
 		res := strings.ReplaceAll(b.String(), " ", "")
 
-		fmt.Println(res)
-
 		for _, sys := range sysTemList {
 			if strings.Contains(strings.ToLower(res), strings.ToLower(sys)) {
 				return sys, nil
 			}
 		}
-
 	}
 
 	return "", errors.New("找不到系统信息")
@@ -256,6 +279,9 @@ func (h *HostInfoService) Prepare(list []*model.HostInfo) error {
 			logrus.Error("UpdateSystemInfo err ", err)
 			continue
 		}
+
+		h.GetHostName(list[k])
+
 		// 拷贝文件
 		// h.CpFile(list[k], "trivy_dir.sh", "/var")
 		// h.Cmd(list[k], "bash /var/trivy_dir.sh")
@@ -263,18 +289,57 @@ func (h *HostInfoService) Prepare(list []*model.HostInfo) error {
 		path := h.GetPath(list[k])
 
 		execPath := path + "/" + ExecPath
-		cmd := `path="{0}";if [ ! -d "$path" ];then     mkdir "$path";     echo "ok"; else     echo "file_exists"; fi`
-		cmd = strings.ReplaceAll(cmd, "{0}", execPath)
-		h.Cmd(list[k], cmd)
+		// cmd := `path="{0}";if [ ! -d "$path" ];then     mkdir -p "$path";     echo "ok"; else     echo "file_exists"; fi`
+		// cmd = strings.ReplaceAll(cmd, "{0}", execPath)
+		// h.Cmd(list[k], cmd)
+		if err := h.CheckDir(list[k], execPath); err != nil {
+			return err
+		}
+
 		h.CpFileBySftp(list[k], "trivy_0.16.0_Linux-64bit.tar.gz", execPath)
 		h.Cmd(list[k], fmt.Sprintf("cd %s;tar -xzvf trivy_0.16.0_Linux-64bit.tar.gz", execPath))
 
 		dbPath := path + "/" + DbPath
-		cmd = `path="{0}";if [ ! -d "$path" ];then     mkdir -p "$path";     echo "ok"; else     echo "file_exists"; fi`
-		cmd = strings.ReplaceAll(cmd, "{0}", dbPath)
-		h.Cmd(list[k], cmd)
+		// cmd = `path="{0}";if [ ! -d "$path" ];then     mkdir -p "$path";     echo "ok"; else     echo "file_exists"; fi`
+		// cmd = strings.ReplaceAll(cmd, "{0}", dbPath)
+		// h.Cmd(list[k], cmd)
+		if err := h.CheckDir(list[k], dbPath); err != nil {
+			return err
+		}
+
 		h.CpFileBySftp(list[k], "trivy-offline.db.tgz", dbPath)
 		h.Cmd(list[k], fmt.Sprintf("cd %s;tar zxvf trivy-offline.db.tgz", dbPath))
+	}
+	return nil
+}
+
+func (h *HostInfoService) CheckDir(host *model.HostInfo, path string) error {
+	client, err := h.GetClient(host)
+	if err != nil {
+		logrus.Error("CpFileBySftp err = ", err)
+		return err
+	}
+	defer client.Close()
+	sftpClient, err := sftp.NewClient(client)
+	if err != nil {
+		logrus.Error("CpFileBySftp err ", err)
+		return err
+	}
+	logger := logrus.WithFields(logrus.Fields{
+		"path": path,
+	})
+	_, err = sftpClient.Stat(path)
+	if err != nil {
+		logger.Info("err = ", err)
+		if os.IsExist(err) {
+			return nil
+		}
+		// 创建目录
+		err := sftpClient.MkdirAll(path)
+		logger.Info("mkdir err = ", err)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

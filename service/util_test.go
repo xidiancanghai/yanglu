@@ -15,3 +15,15 @@ func TestGetCaptCha(t *testing.T) {
 // 	us := NewUtilService()
 // 	us.UploadImage("xiaolongnv.jpg")
 // }
+
+func TestBuildPdf(t *testing.T) {
+	// us := NewUtilService()
+
+	// list := []map[string]interface{}{}
+	// list = append(list, map[string]interface{}{
+	// 	"a": 1,
+	// 	"b": 2,
+	// })
+	// us.buildPdf(list)
+
+}

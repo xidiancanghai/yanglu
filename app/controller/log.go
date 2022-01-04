@@ -2,12 +2,14 @@ package controller
 
 import (
 	"errors"
+	"time"
 	"yanglu/def"
 	"yanglu/helper"
 	"yanglu/service"
 	"yanglu/service/model"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type Log struct {
@@ -48,8 +50,8 @@ func (l *Log) List(ctx *gin.Context) {
 func (l *Log) SearchLog(ctx *gin.Context) {
 
 	params := &struct {
-		StartTime int    `form:"start_time"`
-		EndTime   int    `form:"end_time"`
+		StartTime string `form:"start_time"`
+		EndTime   string `form:"end_time"`
 		Type      int    `form:"type"`
 		Ip        string `form:"ip"`
 	}{}
@@ -66,7 +68,21 @@ func (l *Log) SearchLog(ctx *gin.Context) {
 		return
 	}
 
-	list, err := service.NewActionLogService(uid).SearchLog(params.StartTime, params.EndTime, params.Type, params.Ip)
+	startTime := 0
+	if params.StartTime != "" {
+		temp, err := time.ParseInLocation("2006-01-02", params.StartTime, time.Local)
+		logrus.Info("err = ", err)
+		startTime = int(temp.Unix())
+	}
+	endTime := 0
+	if params.EndTime != "" {
+		temp, _ := time.ParseInLocation("2006-01-02", params.EndTime, time.Local)
+		endTime = int(temp.Unix())
+	}
+
+	logrus.Info(startTime, " ", endTime)
+
+	list, err := service.NewActionLogService(uid).SearchLog(startTime, endTime, params.Type, params.Ip)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return

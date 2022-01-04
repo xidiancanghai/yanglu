@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 	"yanglu/config"
+	"yanglu/service/data"
 	"yanglu/service/model"
 
 	"github.com/sirupsen/logrus"
@@ -328,8 +329,36 @@ func (ts *TaskService) GetProgress(taskId int) (interface{}, error) {
 	}
 	// 给一个进度条
 	if _, ok := res["checking"]; ok {
-		taskItem, _ := model.NewTaskItem().GetItem(taskId)
-		res["progress_bar"], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64((time.Now().Unix()-taskItem.UpdateTime)*100.0/5)), 64)
+		// taskItem, _ := model.NewTaskItem().GetItem(taskId)
+
+		// key := "task_id:" + strconv.Itoa(taskId)
+		// if v, _ := data.C.Get(key); v != 0 {
+		// 	res["progress_bar"], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64((time.Now().Unix()-taskItem.UpdateTime)*100.0/3600)), 64)
+		// }
+
+		key := "task_id:" + strconv.Itoa(taskId)
+		v, is := data.C.Get(key)
+		var val float64 = 5.00
+		if is {
+			val, _ = v.(float64)
+			if val < 50.00 {
+				val += 5.00
+			} else if val < 60.00 {
+				val += 2.50
+			} else if val < 70.00 {
+				val += 1.25
+			} else if val < 80.00 {
+				val += 0.635
+			} else if val < 98.00 {
+				val += 0.4
+			} else if val < 99.95 {
+				val += 0.01
+			} else {
+				val = 99.99
+			}
+		}
+		res["progress_bar"], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", val), 64)
+		data.C.Set(key, val, time.Duration(4800)*time.Second)
 	}
 	res["all"] = all
 	return res, nil

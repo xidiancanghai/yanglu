@@ -24,17 +24,16 @@ func main() {
 
 	// init redis
 	//data.NewPackRedis()
-	logger.InitLogger(config.GetLogPath()+"api", nil)
-	if err := config.InitLicenseConfig(); err != nil {
-		log.Fatal("启动错误 err = ", err)
-	}
-
-	log.Println("conf = ", *config.LicenseInfoConf)
 
 	config.InitEnvConf()
 	config.InitGoodsConif()
 	data.InitMysql()
 	data.InitMemoryCache()
+
+	logger.InitLogger(config.GetLogPath(), nil)
+	if err := config.InitLicenseConfig(); err != nil {
+		log.Fatal("启动错误 err = ", err)
+	}
 
 	port := strconv.Itoa(config.GetHttpPort())
 	flag.Parse()

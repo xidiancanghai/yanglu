@@ -1,15 +1,65 @@
-2021/06/05 07:45:25 succeed to parse env config: {Environment:{Env:1 LogDir:./logs} Mysql:{Api:{Dsn:yanglu:yanglu_2021@tcp(127.0.0.1:3306)/yanglu?charset=utf8mb4} Cron:{Dsn:yanglu:yanglu_2021@tcp(127.0.0.1:3306)/yanglu?charset=utf8mb4}} Http:{Port:8090}}
+2021/12/25 20:00:39 conf =  {10 1 1 1 1 2022-06-27 f47f7e0b47accc6b0fecc9696a4bdcef 0 0 1656259200}
+2021/12/25 20:00:39 succeed to parse env config: {Environment:{Env:3 LogDir:../log} Mysql:{Soft:{Dsn:ylylsm:www.isos.im@tcp(127.0.0.1:3306)/ylylsmdb?charset=utf8mb4} Cloud:{Dsn:ylylsm:www.isos.im@tcp(127.0.0.1:3306)/ylylsmdb?charset=utf8mb4}} Http:{Port:8080} AdminUser:{User:secadmin PassWd:secadmin@123$} Email:{User:no_reply@isos.im Passwd:Secadmin@2021 Addr:smtp.dreamhost.com Host:imap.dreamhost.com}}
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
-[GIN-debug] POST   /user/add_user            --> yanglu/app/controller.(*User).AddUser-fm (3 handlers)
-[GIN-debug] POST   /user/login               --> yanglu/app/controller.(*User).Login-fm (2 handlers)
-[GIN-debug] GET    /user/get_user_info       --> yanglu/app/controller.(*User).GetUserInfo-fm (3 handlers)
-[GIN-debug] POST   /user/set_authority       --> yanglu/app/controller.(*User).SetAuthority-fm (3 handlers)
-[GIN-debug] POST   /user/delete_user         --> yanglu/app/controller.(*User).DeleteUser-fm (3 handlers)
-[GIN-debug] POST   /host/add                 --> yanglu/app/controller.(*Host).Add-fm (3 handlers)
-[GIN-debug] POST   /host/batch_add           --> yanglu/app/controller.(*Host).BatchAdd-fm (3 handlers)
-[GIN-debug] POST   /host/update_department   --> yanglu/app/controller.(*Host).UpdateDepartment-fm (3 handlers)
-[GIN-debug] POST   /host/search_host         --> yanglu/app/controller.(*Host).SearchHost-fm (3 handlers)
-2021/06/05 07:45:25 服务正在启动，监听端口: 8090 ,PID: 81086 v1.6.3 version: temp
+[GIN-debug] GET    /css/*filepath            --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] HEAD   /css/*filepath            --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] GET    /js/*filepath             --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] HEAD   /js/*filepath             --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] GET    /img/*filepath            --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] HEAD   /img/*filepath            --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] GET    /fonts/*filepath          --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] HEAD   /fonts/*filepath          --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (1 handlers)
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (1 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (1 handlers)
+[GIN-debug] GET    /                         --> yanglu/app/routers.InitRouter.func1 (1 handlers)
+[GIN-debug] POST   /user/register            --> yanglu/app/controller.(*User).Register-fm (4 handlers)
+[GIN-debug] POST   /user/add_user            --> yanglu/app/controller.(*User).AddUser-fm (4 handlers)
+[GIN-debug] POST   /user/reset_passwd        --> yanglu/app/controller.(*User).ResetPasswd-fm (4 handlers)
+[GIN-debug] POST   /user/login               --> yanglu/app/controller.(*User).Login-fm (3 handlers)
+[GIN-debug] GET    /user/get_user_info       --> yanglu/app/controller.(*User).GetUserInfo-fm (4 handlers)
+[GIN-debug] POST   /user/set_authority       --> yanglu/app/controller.(*User).SetAuthority-fm (4 handlers)
+[GIN-debug] POST   /user/delete_user         --> yanglu/app/controller.(*User).DeleteUser-fm (4 handlers)
+[GIN-debug] GET    /user/list_users          --> yanglu/app/controller.(*User).ListUsers-fm (4 handlers)
+[GIN-debug] POST   /user/find_passwd         --> yanglu/app/controller.(*User).FindPassWd-fm (3 handlers)
+[GIN-debug] POST   /host/add                 --> yanglu/app/controller.(*Host).Add-fm (4 handlers)
+[GIN-debug] POST   /host/batch_add           --> yanglu/app/controller.(*Host).BatchAdd-fm (4 handlers)
+[GIN-debug] POST   /host/update_department   --> yanglu/app/controller.(*Host).UpdateDepartment-fm (4 handlers)
+[GIN-debug] POST   /host/search_host         --> yanglu/app/controller.(*Host).SearchHost-fm (4 handlers)
+[GIN-debug] GET    /host/get_vulnerability_info --> yanglu/app/controller.(*Host).GetVulnerabilityInfo-fm (4 handlers)
+[GIN-debug] GET    /host/get_vulnerability_pdf --> yanglu/app/controller.(*Host).GetVulnerabilityPdf-fm (4 handlers)
+[GIN-debug] GET    /host/list_all            --> yanglu/app/controller.(*Host).ListAll-fm (4 handlers)
+[GIN-debug] GET    /host/vulnerability_distribute --> yanglu/app/controller.(*Host).VulnerabilityDistribute-fm (4 handlers)
+[GIN-debug] GET    /host/system_os_distribute --> yanglu/app/controller.(*Host).SystemOsDistribute-fm (4 handlers)
+[GIN-debug] POST   /host/set_ip              --> yanglu/app/controller.(*Host).SetIp-fm (4 handlers)
+[GIN-debug] POST   /host/delete              --> yanglu/app/controller.(*Host).Delete-fm (4 handlers)
+[GIN-debug] POST   /task/start_fast_task     --> yanglu/app/controller.(*Task).StartFastTask-fm (4 handlers)
+[GIN-debug] GET    /task/get_progress        --> yanglu/app/controller.(*Task).GetProgress-fm (4 handlers)
+[GIN-debug] POST   /task/add_timed_task      --> yanglu/app/controller.(*Task).AddTimedTask-fm (4 handlers)
+[GIN-debug] POST   /task/add_repeat_task     --> yanglu/app/controller.(*Task).AddRepeatTask-fm (4 handlers)
+[GIN-debug] GET    /task/curl_task_info      --> yanglu/app/controller.(*Task).GetDetail-fm (4 handlers)
+[GIN-debug] GET    /task/check_info          --> yanglu/app/controller.(*Task).CheckInfo-fm (4 handlers)
+[GIN-debug] GET    /log/list                 --> yanglu/app/controller.(*Log).List-fm (4 handlers)
+[GIN-debug] GET    /log/search_log           --> yanglu/app/controller.(*Log).SearchLog-fm (4 handlers)
+[GIN-debug] GET    /config/get_const_config  --> yanglu/app/controller.(*ConfController).GetConf-fm (3 handlers)
+[GIN-debug] GET    /util/get_captcha         --> yanglu/app/controller.(*UtilController).GetCaptcha-fm (3 handlers)
+[GIN-debug] GET    /util/get_captcha_id      --> yanglu/app/controller.(*UtilController).GetCaptchaId-fm (3 handlers)
+[GIN-debug] GET    /util/get_system_info     --> yanglu/app/controller.(*UtilController).GetSystemInfo-fm (3 handlers)
+[GIN-debug] POST   /util/upload_images       --> yanglu/app/controller.(*UtilController).UploadImages-fm (3 handlers)
+[GIN-debug] GET    /util/download_images     --> yanglu/app/controller.(*UtilController).DownloadImage-fm (3 handlers)
+[GIN-debug] GET    /order/config             --> yanglu/app/controller.(*Order).GetConfig-fm (3 handlers)
+[GIN-debug] POST   /order/create             --> yanglu/app/controller.(*Order).Create-fm (3 handlers)
+[GIN-debug] POST   /article/add              --> yanglu/app/controller.(*ArticleController).Add-fm (4 handlers)
+[GIN-debug] GET    /article/list             --> yanglu/app/controller.(*ArticleController).List-fm (4 handlers)
+[GIN-debug] GET    /article/list_my_article  --> yanglu/app/controller.(*ArticleController).ListMyArticle-fm (4 handlers)
+[GIN-debug] POST   /article/delete           --> yanglu/app/controller.(*ArticleController).Delete-fm (4 handlers)
+[GIN-debug] GET    /article/get_detail       --> yanglu/app/controller.(*ArticleController).GetDetail-fm (4 handlers)
+2021/12/25 20:00:39 服务正在启动，监听端口: 8080 ,PID: 3193862 v1.6.3 version: temp
+
+2021/12/25 20:00:44 [31;1m/var/go/yanglu/service/model/user.go:89 [35;1mrecord not found
+[0m[33m[0.377ms] [34;1m[rows:0][0m SELECT * FROM `user_info` WHERE  name = 'secadmin' and passwd = 'secadmin@123$' and is_delete = 0 ORDER BY `user_info`.`uid` LIMIT 1
+
+2021/12/25 20:01:48 [31;1m/var/go/yanglu/service/model/user.go:89 [35;1mrecord not found
+[0m[33m[0.347ms] [34;1m[rows:0][0m SELECT * FROM `user_info` WHERE  name = 'secadmin' and passwd = 'secadmin@123$' and is_delete = 0 ORDER BY `user_info`.`uid` LIMIT 1

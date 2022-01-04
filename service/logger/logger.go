@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,9 +16,12 @@ func InitLogger(logPath string, prefix map[string]interface{}) {
 	if len(logPath) == 0 {
 		logPath = config.GetLogPath()
 	}
+
+	fmt.Println("path = ", logPath)
 	exist, _ := pathExists(logPath)
 	if !exist {
 		err := os.MkdirAll(logPath, os.ModePerm)
+		fmt.Println(err)
 		if err != nil {
 			log.Fatalf("failed to mkdir, path: %v, err: %v", logPath, err)
 		}

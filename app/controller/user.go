@@ -2,6 +2,8 @@ package controller
 
 import (
 	"errors"
+	"strconv"
+	"strings"
 	"yanglu/config"
 	"yanglu/def"
 	"yanglu/helper"
@@ -142,6 +144,12 @@ func (u *User) Login(ctx *gin.Context) {
 	helper.OKRsp(ctx, res)
 }
 
+func (u *User) Logout(ctx *gin.Context) {
+	uid := ctx.GetInt("uid")
+	service.NewActionLogService(uid).Logout()
+	helper.OKRsp(ctx, gin.H{})
+}
+
 func (u *User) GetUserInfo(ctx *gin.Context) {
 	uid := ctx.GetInt("uid")
 	user, err := service.NewUserService().UserInfo(uid)
@@ -161,7 +169,7 @@ func (u *User) SetAuthority(ctx *gin.Context) {
 	uid := ctx.GetInt("uid")
 	params := &struct {
 		TargetName string `form:"target_name" binding:"required"`
-		Authority  int    `form:"authority" binding:"required"`
+		Authority  string `form:"authority" binding:"required"`
 	}{}
 
 	if err := ctx.ShouldBind(params); err != nil {
@@ -179,8 +187,16 @@ func (u *User) SetAuthority(ctx *gin.Context) {
 		helper.ErrRsp(ctx, def.CodeErr, "你没有权限设置他人权限", errors.New("你没有权限设置他人权限"))
 		return
 	}
+	authoritys := []int{}
 
-	err = service.NewUserService().SetAuthority(params.TargetName, params.Authority)
+	ss := strings.Split(params.Authority, ",")
+
+	for _, v := range ss {
+		t, _ := strconv.Atoi(v)
+		authoritys = append(authoritys, t)
+	}
+
+	err = service.NewUserService().SetAuthority(params.TargetName, authoritys)
 	if err != nil {
 		helper.ErrRsp(ctx, def.CodeErr, err.Error(), err)
 		return

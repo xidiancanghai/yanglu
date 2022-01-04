@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"yanglu/config"
 	"yanglu/helper"
 
+	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -131,4 +133,112 @@ func (us *UtilService) DownloadImage(fileName string, ctx *gin.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (s *UtilService) BuildPdf(list []map[string]interface{}) ([]byte, error) {
+
+	if len(list) == 0 {
+		return nil, errors.New("参数错误")
+	}
+
+	str := `
+	<html>
+		<head>
+		<meta charset="utf-8">
+		<title>检测结果</title>
+		</head>
+		<body>
+		<table border="1">
+	`
+	keys := []string{}
+
+	str += "<tr>"
+	for k := range list[0] {
+		keys = append(keys, k)
+		str += "<td>" + k + "</td>"
+	}
+	str += "</tr>"
+
+	for _, m := range list {
+
+		str += "<tr>"
+		for _, key := range keys {
+			str += "<td>" + Strval(m[key]) + "</td>"
+		}
+		str += "</tr>"
+	}
+	str += `</table>
+		</body>
+		</html>
+	`
+
+	pdfg, err := wkhtmltopdf.NewPDFGenerator()
+
+	if err != nil {
+		return nil, err
+	}
+
+	pdfg.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(str)))
+
+	if err = pdfg.Create(); err != nil {
+		logrus.Error("Create err = ", err)
+		return nil, err
+	}
+
+	return pdfg.Bytes(), nil
+}
+
+func Strval(value interface{}) string {
+	// interface 转 string
+	var key string
+	if value == nil {
+		return key
+	}
+	switch value.(type) {
+	case float64:
+		ft := value.(float64)
+		key = strconv.FormatFloat(ft, 'f', -1, 64)
+	case float32:
+		ft := value.(float32)
+		key = strconv.FormatFloat(float64(ft), 'f', -1, 64)
+	case int:
+		it := value.(int)
+		key = strconv.Itoa(it)
+	case uint:
+		it := value.(uint)
+		key = strconv.Itoa(int(it))
+	case int8:
+		it := value.(int8)
+		key = strconv.Itoa(int(it))
+	case uint8:
+		it := value.(uint8)
+		key = strconv.Itoa(int(it))
+	case int16:
+		it := value.(int16)
+		key = strconv.Itoa(int(it))
+	case uint16:
+		it := value.(uint16)
+		key = strconv.Itoa(int(it))
+	case int32:
+		it := value.(int32)
+		key = strconv.Itoa(int(it))
+	case uint32:
+		it := value.(uint32)
+		key = strconv.Itoa(int(it))
+	case int64:
+		it := value.(int64)
+		key = strconv.FormatInt(it, 10)
+	case uint64:
+		it := value.(uint64)
+		key = strconv.FormatUint(it, 10)
+	case string:
+		key = value.(string)
+	case []byte:
+		key = string(value.([]byte))
+	default:
+		newValue, _ := json.Marshal(value)
+		key = string(newValue)
+	}
+
+	return key
 }

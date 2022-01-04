@@ -19,6 +19,7 @@ type HostInfo struct {
 	SshPasswd    string `json:"-"`
 	Department   string `json:"department"`
 	BusinessName string `json:"business_name"`
+	Hostname     string `json:"hostname"`
 	SystemOs     string `json:"system_os"`
 	Uid          int    `json:"-"`
 	IsDelete     int    `json:"-"`
